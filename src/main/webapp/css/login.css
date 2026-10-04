@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Irish+Grover&family=Itim&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&family=Preahvihear&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    overflow: hidden;
+    font-family: 'Irish Grover', cursive;
+}
+
+
+/* ==============================
+   GAME SCREEN
+   ============================== */
+
+.game-screen {
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url("../assets/background_login.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    position: relative;
+}
+
+
+/* ==============================
+   MENU
+   ============================== */
+
+.menu {
+    position: absolute;
+
+    left: 18%;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+/* ==============================
+   BUTTON
+   ============================== */
+
+.menu-button {
+
+    width: 280px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 52px;
+    font-weight: 400;
+
+    color: #00e878;
+
+    cursor: pointer;
+
+    text-shadow:
+        3px 3px 0 #075b2a,
+        -1px -1px 0 #b5ffb5;
+
+    transition:
+        transform 0.18s ease,
+        color 0.18s ease,
+        text-shadow 0.18s ease;
+}
+
+
+/* ==============================
+   HOVER
+   ============================== */
+
+.menu-button:hover {
+
+    color: #b7ff68;
+
+    transform: scale(1.08);
+
+    text-shadow:
+        3px 3px 0 #075b2a,
+        0 0 12px #d2ff8a;
+}
+
+
+/* ==============================
+   CLICK
+   ============================== */
+
+.menu-button:active {
+
+    transform: scale(0.94);
+
+}
+
+
+/* ==============================
+   RESPONSIVE
+   ============================== */
+
+@media (max-width: 800px) {
+
+    .menu {
+        left: 50%;
+
+        transform:
+            translate(-50%, -50%);
+    }
+
+    .menu-button {
+        font-size: 44px;
+    }
+}

@@ -1,0 +1,454 @@
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    overflow: hidden;
+    background: #000;
+}
+
+
+/* =========================
+   PAGE
+   ========================= */
+
+.find-match-page {
+
+    width: 100vw;
+    height: 100vh;
+
+    position: relative;
+
+    background-image:
+        url("../assets/chess_stage.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   OVERLAY
+   ========================= */
+
+.find-match-page::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(15, 35, 18, 0.08);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================
+   BACK
+   ========================= */
+
+.back-button {
+
+    position: absolute;
+
+    top: 28px;
+    left: 35px;
+
+    z-index: 20;
+
+    border: none;
+
+    background: transparent;
+
+    color: #f4dc68;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    text-shadow:
+        2px 2px 0 #203018,
+        -1px -1px 0 #203018;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.back-button:hover {
+
+    transform: translateX(-5px) scale(1.08);
+
+    color: #fff2a0;
+
+}
+
+
+.back-button:active {
+
+    transform: scale(0.95);
+
+}
+
+
+/* =========================
+   TITLE
+   ========================= */
+
+.match-title {
+
+    position: absolute;
+
+    top: 9%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    min-width: 430px;
+
+    padding: 15px 55px;
+
+    text-align: center;
+
+    background: #1d351d;
+
+    border: 4px solid #405d25;
+
+    box-shadow:
+        0 0 0 4px #152816,
+        0 8px 0 #10200f;
+}
+
+
+.match-title span {
+
+    color: #fff1a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: clamp(32px, 4vw, 52px);
+
+    text-shadow:
+        3px 3px 0 #172313;
+}
+
+
+/* =========================
+   PANEL
+   ========================= */
+
+.match-panel {
+
+    position: absolute;
+
+    z-index: 10;
+
+    top: 25%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 520px;
+
+    min-height: 390px;
+
+    padding: 45px 50px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(24, 48, 24, 0.97),
+            rgba(15, 37, 19, 0.97)
+        );
+
+    border: 4px solid #496f29;
+
+    box-shadow:
+        0 0 0 5px #172916,
+        0 10px 0 #10200f;
+}
+
+
+/* =========================
+   SEARCH ICON
+   ========================= */
+
+.search-icon {
+
+    width: 110px;
+
+    height: 110px;
+
+    margin-bottom: 30px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    position: relative;
+}
+
+
+.pixel-circle {
+
+    width: 70px;
+
+    height: 70px;
+
+    border: 8px solid #d7e96a;
+
+    border-radius: 50%;
+
+    position: relative;
+
+    animation: search-spin 1.5s linear infinite;
+}
+
+
+.pixel-circle::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 30px;
+
+    height: 8px;
+
+    background: #d7e96a;
+
+    right: -24px;
+
+    bottom: -10px;
+
+    transform: rotate(45deg);
+
+}
+
+
+/* =========================
+   ANIMATION
+   ========================= */
+
+@keyframes search-spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================
+   STATUS
+   ========================= */
+
+.search-status {
+
+    color: #fff0a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 29px;
+
+    text-shadow:
+        2px 2px 0 #172313;
+
+    min-height: 42px;
+}
+
+
+/* =========================
+   DOTS
+   ========================= */
+
+.dots::after {
+
+    content: "";
+
+    animation: dots 1.5s infinite;
+
+}
+
+
+@keyframes dots {
+
+    0% {
+        content: "";
+    }
+
+    25% {
+        content: ".";
+    }
+
+    50% {
+        content: "..";
+    }
+
+    75% {
+        content: "...";
+    }
+
+    100% {
+        content: "";
+    }
+
+}
+
+
+/* =========================
+   DESCRIPTION
+   ========================= */
+
+.search-description {
+
+    margin-top: 15px;
+
+    margin-bottom: 35px;
+
+    color: #b8c5a6;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 17px;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================
+   CANCEL BUTTON
+   ========================= */
+
+.cancel-button {
+
+    width: 230px;
+
+    height: 55px;
+
+    border: 3px solid #74883d;
+
+    background: #273d25;
+
+    color: #eee59a;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 23px;
+
+    cursor: pointer;
+
+    text-shadow:
+        2px 2px 0 #172313;
+
+    box-shadow:
+        0 4px 0 #142214;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+}
+
+
+.cancel-button:hover {
+
+    background: #3a5130;
+
+    transform: scale(1.04);
+
+}
+
+
+.cancel-button:active {
+
+    transform: translateY(3px);
+
+    box-shadow:
+        0 1px 0 #142214;
+
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .match-title {
+
+        min-width: 0;
+
+        width: 70%;
+
+        padding: 12px 20px;
+
+    }
+
+    .match-panel {
+
+        width: 80%;
+
+        padding: 35px 25px;
+
+    }
+
+    .search-status {
+
+        font-size: 23px;
+
+    }
+
+    .back-button {
+
+        top: 18px;
+        left: 20px;
+
+        font-size: 24px;
+
+    }
+
+}

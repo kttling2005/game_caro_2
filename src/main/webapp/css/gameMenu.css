@@ -1,0 +1,501 @@
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+}
+
+
+/* =========================
+   GAME MENU
+   ========================= */
+
+.game-menu {
+    width: 100vw;
+    height: 100vh;
+
+    position: relative;
+
+    background-image: url("../assets/background_newgame.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   MENU BUTTON
+   ========================= */
+
+.game-option {
+
+    position: absolute;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #e5b900;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: clamp(30px, 3vw, 48px);
+
+    font-weight: 400;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    text-shadow:
+        2px 2px 0 #26351f,
+        -1px -1px 0 #26351f;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease,
+        text-shadow 0.2s ease;
+}
+
+
+/* =========================
+   CREATE ROOM
+   ========================= */
+
+.create-room {
+
+    top: 8%;
+
+    left: 47%;
+
+}
+
+
+/* =========================
+   JOIN ROOM
+   ========================= */
+
+.join-room {
+
+    top: 17%;
+
+    right: 13%;
+
+}
+
+
+/* =========================
+   FIND MATCH
+   ========================= */
+
+.find-match {
+
+    top: 25%;
+
+    left: 48%;
+
+}
+
+.back-button {
+    position: absolute;
+
+    top: 30px;
+    left: 35px;
+
+    border: none;
+    background: transparent;
+
+    color: #e5b900;
+
+    font-family: 'Irish Grover', cursive;
+    font-size: 28px;
+
+    cursor: pointer;
+
+    text-shadow:
+        2px 2px 0 #26351f,
+        -1px -1px 0 #26351f;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* =========================
+   HOVER
+   ========================= */
+
+.game-option:hover {
+
+    transform: scale(1.08);
+
+    color: #ffe36b;
+
+    text-shadow:
+        2px 2px 0 #26351f,
+        0 0 8px #ffe36b;
+}
+
+.back-button:hover {
+    transform: translateX(-5px) scale(1.08);
+
+    color: #ffe36b;
+
+    text-shadow:
+        2px 2px 0 #26351f,
+        0 0 8px #ffe36b;
+}
+
+
+/* =========================
+   CLICK
+   ========================= */
+
+.game-option:active {
+
+    transform: scale(0.95);
+
+}
+
+.back-button:active {
+    transform: translateX(-3px) scale(0.95);
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+
+    .game-option {
+        font-size: clamp(24px, 4vw, 38px);
+    }
+
+    .create-room {
+        top: 10%;
+        left: 45%;
+    }
+
+    .join-room {
+        top: 20%;
+        right: 8%;
+    }
+
+    .find-match {
+        top: 29%;
+        left: 46%;
+    }
+}
+
+/* =========================
+   ONLINE PLAYERS
+   ========================= */
+
+.online-players {
+    position: absolute;
+
+    left: 35px;
+    bottom: 35px;
+
+    width: 310px;
+
+    padding: 18px 20px;
+
+    background: rgba(28, 48, 30, 0.62);
+
+    border: 2px solid rgba(255, 227, 107, 0.65);
+
+    border-radius: 18px;
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.35),
+        inset 0 0 15px rgba(255, 255, 255, 0.05);
+
+    z-index: 10;
+}
+
+
+/* =========================
+   ONLINE HEADER
+   ========================= */
+
+.online-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 12px;
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+.online-title {
+    color: #ffe36b;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 24px;
+
+    text-shadow:
+        2px 2px 0 #26351f;
+}
+
+
+.online-count {
+    padding: 4px 9px;
+
+    border-radius: 10px;
+
+    background: rgba(180, 220, 150, 0.18);
+
+    color: #d9f7c5;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   PLAYER LIST
+   ========================= */
+
+.player-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.player {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 7px 9px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.player:hover {
+    background: rgba(255, 227, 107, 0.14);
+
+    transform: translateX(4px);
+}
+
+
+/* =========================
+   AVATAR
+   ========================= */
+
+.player-avatar {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.18);
+
+    border: 2px solid rgba(255, 227, 107, 0.65);
+
+    font-size: 22px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================
+   PLAYER INFO
+   ========================= */
+
+.player-info {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+
+.player-name {
+    color: #fff5b5;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 18px;
+
+    text-shadow:
+        1px 1px 0 #26351f;
+}
+
+
+.player-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: rgba(235, 255, 220, 0.8);
+
+    font-family: Arial, sans-serif;
+
+    font-size: 11px;
+}
+
+
+/* =========================
+   ONLINE DOT
+   ========================= */
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #8bea70;
+
+    box-shadow:
+        0 0 6px #8bea70;
+}
+
+
+/* =========================
+   ONLINE DOT ANIMATION
+   ========================= */
+
+@keyframes onlinePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.55;
+        transform: scale(0.8);
+    }
+}
+
+
+.status-dot {
+    animation: onlinePulse 1.8s infinite ease-in-out;
+}
+
+@media (max-width: 900px) {
+
+    .online-players {
+        width: 260px;
+
+        left: 20px;
+        bottom: 20px;
+
+        padding: 14px 16px;
+    }
+
+    .online-title {
+        font-size: 20px;
+    }
+
+    .player-avatar {
+        width: 36px;
+        height: 36px;
+
+        font-size: 19px;
+    }
+
+    .player-name {
+        font-size: 16px;
+    }
+}
+
+/* =========================
+   PLAYER DETAILS
+   ========================= */
+
+.player-details {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+/* =========================
+   PLAYER SCORE
+   ========================= */
+
+.player-score {
+    color: #ffe98a;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 12px;
+
+    text-shadow:
+        1px 1px 0 #26351f;
+}
+
+
+/* =========================
+   STATUS
+   ========================= */
+
+.player-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: rgba(235, 255, 220, 0.8);
+
+    font-family: Arial, sans-serif;
+
+    font-size: 10px;
+}

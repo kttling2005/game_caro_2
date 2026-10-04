@@ -1,0 +1,441 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Sep 23, 2026, 12:10:37 AM
+    Author     : bugbug05
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    overflow: hidden;
+    background: #000;
+}
+
+
+/* =========================
+   PAGE
+   ========================= */
+
+.join-room-page {
+
+    width: 100vw;
+    height: 100vh;
+
+    position: relative;
+
+    background-image:
+        url("../assets/chess_stage.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   OVERLAY
+   ========================= */
+
+.join-room-page::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(15, 35, 18, 0.08);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================
+   BACK
+   ========================= */
+
+.back-button {
+
+    position: absolute;
+
+    top: 28px;
+    left: 35px;
+
+    z-index: 20;
+
+    border: none;
+
+    background: transparent;
+
+    color: #f4dc68;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    text-shadow:
+        2px 2px 0 #203018,
+        -1px -1px 0 #203018;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.back-button:hover {
+
+    transform: translateX(-5px) scale(1.08);
+
+    color: #fff2a0;
+
+}
+
+
+.back-button:active {
+
+    transform: scale(0.95);
+
+}
+
+
+/* =========================
+   TITLE
+   ========================= */
+
+.room-title {
+
+    position: absolute;
+
+    top: 9%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    min-width: 430px;
+
+    padding: 15px 55px;
+
+    text-align: center;
+
+    background: #1d351d;
+
+    border: 4px solid #405d25;
+
+    box-shadow:
+        0 0 0 4px #152816,
+        0 8px 0 #10200f;
+}
+
+
+.room-title span {
+
+    color: #fff1a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: clamp(32px, 4vw, 52px);
+
+    text-shadow:
+        3px 3px 0 #172313;
+}
+
+
+/* =========================
+   PANEL
+   ========================= */
+
+.room-panel {
+
+    position: absolute;
+
+    z-index: 10;
+
+    top: 25%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 540px;
+
+    padding: 42px 55px 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(24, 48, 24, 0.97),
+            rgba(15, 37, 19, 0.97)
+        );
+
+    border: 4px solid #496f29;
+
+    box-shadow:
+        0 0 0 5px #172916,
+        0 10px 0 #10200f;
+}
+
+
+/* =========================
+   FORM
+   ========================= */
+
+.form-group {
+
+    margin-bottom: 30px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #fff0a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 24px;
+
+    text-shadow:
+        2px 2px 0 #172313;
+}
+
+
+.label-icon {
+
+    display: inline-block;
+
+    width: 38px;
+
+    color: #fff3a1;
+
+}
+
+
+.optional {
+
+    font-size: 17px;
+
+    opacity: 0.8;
+
+}
+
+
+/* =========================
+   INPUT
+   ========================= */
+
+.form-group input {
+
+    width: 100%;
+
+    height: 55px;
+
+    padding: 0 17px;
+
+    border: 2px solid #8fae3d;
+
+    outline: none;
+
+    border-radius: 8px;
+
+    background: #122318;
+
+    color: #eee99c;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 18px;
+}
+
+
+.form-group input::placeholder {
+
+    color: #8c9685;
+
+}
+
+
+.form-group input:focus {
+
+    border-color: #d4e85d;
+
+    box-shadow:
+        0 0 8px rgba(208, 231, 77, 0.35);
+
+}
+
+
+/* =========================
+   JOIN BUTTON
+   ========================= */
+
+.join-button {
+
+    width: 100%;
+
+    height: 65px;
+
+    margin-top: 5px;
+
+    border: 3px solid #7aa632;
+
+    background:
+        linear-gradient(
+            #83c63c,
+            #4e8b28
+        );
+
+    color: #fff4ad;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 30px;
+
+    text-shadow:
+        2px 2px 0 #31531d;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 0 #284a1d;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease;
+}
+
+
+.join-button:hover {
+
+    filter: brightness(1.15);
+
+    transform: scale(1.03);
+
+}
+
+
+.join-button:active {
+
+    transform: translateY(4px);
+
+    box-shadow:
+        0 1px 0 #284a1d;
+
+}
+
+
+/* =========================
+   FIND MATCH
+   ========================= */
+
+.find-match-link {
+
+    margin-top: 25px;
+
+    text-align: center;
+
+    color: #aeb99f;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 16px;
+}
+
+
+.find-match-link button {
+
+    display: block;
+
+    margin: 6px auto 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #d8e86b;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 19px;
+
+    cursor: pointer;
+
+    text-decoration: underline;
+
+}
+
+
+.find-match-link button:hover {
+
+    color: #fff2a0;
+
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .room-title {
+
+        min-width: 0;
+
+        width: 70%;
+
+        padding: 12px 20px;
+
+    }
+
+
+    .room-panel {
+
+        width: 80%;
+
+        padding: 32px 28px;
+
+    }
+
+
+    .back-button {
+
+        top: 18px;
+
+        left: 20px;
+
+        font-size: 24px;
+
+    }
+
+}

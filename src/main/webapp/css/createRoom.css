@@ -1,0 +1,442 @@
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    overflow: hidden;
+    background: #000;
+}
+
+
+/* =========================
+   PAGE
+   ========================= */
+
+.create-room-page {
+
+    width: 100vw;
+    height: 100vh;
+
+    position: relative;
+
+    background-image:
+        url("../assets/chess_stage.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   DARK OVERLAY
+   ========================= */
+
+.create-room-page::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(15, 35, 18, 0.08);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================
+   BACK BUTTON
+   ========================= */
+
+.back-button {
+
+    position: absolute;
+
+    top: 28px;
+    left: 35px;
+
+    z-index: 20;
+
+    border: none;
+    background: transparent;
+
+    color: #f4dc68;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    text-shadow:
+        2px 2px 0 #203018,
+        -1px -1px 0 #203018;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.back-button:hover {
+
+    transform: translateX(-5px) scale(1.08);
+
+    color: #fff2a0;
+
+}
+
+
+.back-button:active {
+
+    transform: scale(0.95);
+
+}
+
+
+/* =========================
+   TITLE
+   ========================= */
+
+.room-title {
+
+    position: absolute;
+
+    top: 8%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    min-width: 430px;
+
+    padding: 15px 55px;
+
+    text-align: center;
+
+    background: #1d351d;
+
+    border: 4px solid #405d25;
+
+    box-shadow:
+        0 0 0 4px #152816,
+        0 8px 0 #10200f;
+
+}
+
+
+/* leaves / decorations */
+
+.room-title::before,
+.room-title::after {
+
+    content: "✦";
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #8fcf4b;
+
+    font-size: 38px;
+
+}
+
+
+.room-title::before {
+
+    left: -35px;
+
+}
+
+
+.room-title::after {
+
+    right: -35px;
+
+}
+
+
+.room-title span {
+
+    color: #fff1a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: clamp(32px, 4vw, 52px);
+
+    text-shadow:
+        3px 3px 0 #172313;
+
+}
+
+
+/* =========================
+   PANEL
+   ========================= */
+
+.room-panel {
+
+    position: absolute;
+
+    z-index: 10;
+
+    top: 23%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 540px;
+
+    padding: 38px 55px 32px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(24, 48, 24, 0.97),
+            rgba(15, 37, 19, 0.97)
+        );
+
+    border: 4px solid #496f29;
+
+    box-shadow:
+        0 0 0 5px #172916,
+        0 10px 0 #10200f;
+
+}
+
+
+/* =========================
+   FORM GROUP
+   ========================= */
+
+.form-group {
+
+    margin-bottom: 28px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #fff0a0;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 24px;
+
+    text-shadow:
+        2px 2px 0 #172313;
+
+}
+
+
+.label-icon {
+
+    display: inline-block;
+
+    width: 38px;
+
+    color: #fff3a1;
+
+}
+
+
+.optional {
+
+    font-size: 17px;
+
+    opacity: 0.8;
+
+}
+
+
+/* =========================
+   INPUT
+   ========================= */
+
+.form-group input,
+.form-group select {
+
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 16px;
+
+    border: 2px solid #8fae3d;
+
+    outline: none;
+
+    border-radius: 8px;
+
+    background: #122318;
+
+    color: #eee99c;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 18px;
+
+}
+
+
+.form-group input::placeholder {
+
+    color: #8c9685;
+
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+
+    border-color: #d4e85d;
+
+    box-shadow:
+        0 0 8px rgba(208, 231, 77, 0.35);
+
+}
+
+
+/* =========================
+   SELECT
+   ========================= */
+
+.form-group select {
+
+    cursor: pointer;
+
+}
+
+
+.form-group select option {
+
+    background: #172b1b;
+
+    color: #fff1a0;
+
+}
+
+
+/* =========================
+   CREATE BUTTON
+   ========================= */
+
+.create-button {
+
+    width: 100%;
+
+    height: 65px;
+
+    margin-top: 5px;
+
+    border: 3px solid #7aa632;
+
+    background:
+        linear-gradient(
+            #83c63c,
+            #4e8b28
+        );
+
+    color: #fff4ad;
+
+    font-family: 'Irish Grover', cursive;
+
+    font-size: 31px;
+
+    text-shadow:
+        2px 2px 0 #31531d;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 0 #284a1d;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease;
+
+}
+
+
+.create-button:hover {
+
+    filter: brightness(1.15);
+
+    transform: scale(1.03);
+
+}
+
+
+.create-button:active {
+
+    transform: translateY(4px);
+
+    box-shadow:
+        0 1px 0 #284a1d;
+
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .room-title {
+
+        min-width: auto;
+
+        width: 70%;
+
+        padding: 12px 20px;
+
+    }
+
+    .room-panel {
+
+        width: 80%;
+
+        padding: 30px;
+
+    }
+
+    .back-button {
+
+        top: 18px;
+        left: 20px;
+
+        font-size: 24px;
+
+    }
+
+}
