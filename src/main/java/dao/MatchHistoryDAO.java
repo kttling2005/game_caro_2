@@ -1,6 +1,7 @@
 package dao;
 
 import model.MatchHistory;
+import model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,16 @@ public class MatchHistoryDAO {
 
     public List<MatchHistory> getRecentMatchesByUserId(int userId, int limit) {
         List<MatchHistory> list = new ArrayList<>();
-        String sql = "SELECT * FROM match_history WHERE player1_id = ? OR player2_id = ? ORDER BY played_at DESC LIMIT ?";
+        String sql = "SELECT m.*, "
+                   + "       u1.username AS p1_username, u1.nickname AS p1_nickname, u1.avatar AS p1_avatar, u1.score AS p1_score, "
+                   + "       u2.username AS p2_username, u2.nickname AS p2_nickname, u2.avatar AS p2_avatar, u2.score AS p2_score, "
+                   + "       w.username AS win_username, w.nickname AS win_nickname "
+                   + "FROM match_history m "
+                   + "LEFT JOIN users u1 ON m.player1_id = u1.id "
+                   + "LEFT JOIN users u2 ON m.player2_id = u2.id "
+                   + "LEFT JOIN users w ON m.winner_id = w.id "
+                   + "WHERE m.player1_id = ? OR m.player2_id = ? "
+                   + "ORDER BY m.played_at DESC LIMIT ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -68,7 +78,36 @@ public class MatchHistoryDAO {
             ps.setInt(3, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapMatch(rs));
+                    MatchHistory m = mapMatch(rs);
+
+                    // Map Player 1
+                    User p1 = new User();
+                    p1.setId(m.getPlayer1Id());
+                    p1.setUsername(rs.getString("p1_username"));
+                    p1.setNickname(rs.getString("p1_nickname"));
+                    p1.setAvatar(rs.getString("p1_avatar"));
+                    p1.setScore(rs.getInt("p1_score"));
+                    m.setPlayer1(p1);
+
+                    // Map Player 2
+                    User p2 = new User();
+                    p2.setId(m.getPlayer2Id());
+                    p2.setUsername(rs.getString("p2_username"));
+                    p2.setNickname(rs.getString("p2_nickname"));
+                    p2.setAvatar(rs.getString("p2_avatar"));
+                    p2.setScore(rs.getInt("p2_score"));
+                    m.setPlayer2(p2);
+
+                    // Map Winner if present
+                    if (m.getWinnerId() != null) {
+                        User w = new User();
+                        w.setId(m.getWinnerId());
+                        w.setUsername(rs.getString("win_username"));
+                        w.setNickname(rs.getString("win_nickname"));
+                        m.setWinner(w);
+                    }
+
+                    list.add(m);
                 }
             }
         } catch (SQLException e) {

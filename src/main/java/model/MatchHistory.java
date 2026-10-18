@@ -116,4 +116,58 @@ public class MatchHistory {
     public void setWinner(User winner) {
         this.winner = winner;
     }
+
+    public String getFormattedDuration() {
+        if (durationSeconds <= 0) return "00:01";
+        int mins = durationSeconds / 60;
+        int secs = durationSeconds % 60;
+        return String.format("%02d:%02d", mins, secs);
+    }
+
+    public String getFormattedPlayedAt() {
+        if (playedAt == null) return "N/A";
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
+        return sdf.format(playedAt);
+    }
+
+    public String getTimeAgo() {
+        if (playedAt == null) return "Vừa xong";
+        long diffMs = System.currentTimeMillis() - playedAt.getTime();
+        long diffSecs = diffMs / 1000;
+        if (diffSecs < 60) return "Vừa xong";
+        long diffMins = diffSecs / 60;
+        if (diffMins < 60) return diffMins + " phút trước";
+        long diffHours = diffMins / 60;
+        if (diffHours < 24) return diffHours + " giờ trước";
+        long diffDays = diffHours / 24;
+        if (diffDays < 30) return diffDays + " ngày trước";
+        return getFormattedPlayedAt();
+    }
+
+    public String getResultForUser(int currentUserId) {
+        if (winnerId == null || winnerId == 0) {
+            return "DRAW";
+        }
+        if (winnerId == currentUserId) {
+            return "WIN";
+        }
+        return "LOSS";
+    }
+
+    public User getOpponent(int currentUserId) {
+        if (player1Id == currentUserId) {
+            return player2;
+        }
+        return player1;
+    }
+
+    public int getScoreChangeForUser(int currentUserId) {
+        if (winnerId == null || winnerId == 0) {
+            return 5;
+        }
+        if (winnerId == currentUserId) {
+            return 25;
+        }
+        return -15;
+    }
 }

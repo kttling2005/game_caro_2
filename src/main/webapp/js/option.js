@@ -53,9 +53,16 @@ function closeOption() {
 document.addEventListener('DOMContentLoaded', () => {
     rememberOptionReturnUrl();
 
-    const savedTab = sessionStorage.getItem('currentOptionTab');
-    if (savedTab && document.getElementById('tab-' + savedTab)) {
-        switchTab(savedTab);
+    // Ưu tiên đọc tham số tab từ URL (ví dụ ?tab=history)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && document.getElementById('tab-' + tabParam)) {
+        switchTab(tabParam);
+    } else {
+        const savedTab = sessionStorage.getItem('currentOptionTab');
+        if (savedTab && document.getElementById('tab-' + savedTab)) {
+            switchTab(savedTab);
+        }
     }
 
     initSettings();
@@ -334,3 +341,20 @@ function showToast(msg) {
         }, 3000);
     }
 }
+
+// 6. LỌC DANH SÁCH LỊCH SỬ ĐẤU
+function filterMatches(type, btn) {
+    document.querySelectorAll('.h-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const cards = document.querySelectorAll('#historyMatchesList .match-card');
+    cards.forEach(card => {
+        const res = card.getAttribute('data-result');
+        if (type === 'all' || res === type) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+

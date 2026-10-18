@@ -22,6 +22,14 @@
         ← Back
     </button>
 
+    <!-- VIEW RANK TIERS BUTTON -->
+    <a href="${pageContext.request.contextPath}/profile?tab=ranks" 
+       class="rank-info-button"
+       style="position: absolute; top: 20px; right: 25px; background: rgba(0, 232, 120, 0.15); border: 2px solid #00e878; color: #00e878; padding: 10px 18px; border-radius: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; transition: all 0.25s ease; box-shadow: 0 0 12px rgba(0,232,120,0.25);"
+       title="Xem chi tiết các mốc điểm và bậc Rank">
+        🏆 Bảng Bậc Rank
+    </a>
+
     <!-- TITLE -->
     <div class="ranking-title">
         PLAYER RANKING

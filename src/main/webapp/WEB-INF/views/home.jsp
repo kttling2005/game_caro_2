@@ -18,7 +18,7 @@
 
     <!-- TOP-RIGHT PLAYER PROFILE BAR -->
     <% if (session.getAttribute("currentUser") != null) { %>
-    <div class="top-profile-bar" onclick="openOption()" title="Nhấp để xem Hồ sơ & Cài đặt">
+    <div class="top-profile-bar" onclick="openProfile()" title="Nhấp để xem Hồ sơ cá nhân & Đổi Avatar">
         <div class="top-profile-avatar">
             <img src="${sessionScope.currentUser.getAvatarUrl(pageContext.request.contextPath)}" 
                  alt="Avatar"
@@ -34,7 +34,7 @@
                 ⭐ ${sessionScope.currentUser.score} pts &bull; Thắng: ${sessionScope.currentUser.winRate}%
             </div>
         </div>
-        <span class="top-profile-arrow">⚙️</span>
+        <span class="top-profile-arrow">👤</span>
     </div>
     <% } %>
 
@@ -56,13 +56,17 @@
                 New Game
             </button>
 
-            <button class="menu-item" onclick="openOption()">
-                Option
+            <button class="menu-item" onclick="openHistory()">
+                History
             </button>
 
             <button class="menu-item" onclick="openRanking()">
                 Ranking
-            </button>   
+            </button>
+
+            <button class="menu-item" onclick="openSettings()">
+                Settings
+            </button>
 
             <button class="menu-item" onclick="exitGame()">
                 Exit
@@ -84,7 +88,17 @@
 
 </div>
 
-<script src="${pageContext.request.contextPath}/js/home.js"></script>
+<script>
+    const contextPath = "${pageContext.request.contextPath}";
+    function newGame() { window.location.href = contextPath + "/game"; }
+    function openProfile() { window.location.href = contextPath + "/profile?tab=profile"; }
+    function openHistory() { window.location.href = contextPath + "/profile?tab=history"; }
+    function openRanking() { window.location.href = contextPath + "/ranking"; }
+    function openSettings() { window.location.href = contextPath + "/settings"; }
+    function openOption() { window.location.href = contextPath + "/settings"; }
+    function exitGame() { window.location.href = contextPath + "/logout"; }
+</script>
+<script src="${pageContext.request.contextPath}/js/home.js?v=<%= System.currentTimeMillis() %>"></script>
 
 </body>
 </html>

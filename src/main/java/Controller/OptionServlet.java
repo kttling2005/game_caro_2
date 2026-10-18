@@ -1,6 +1,8 @@
 package Controller;
 
 import dao.UserDAO;
+import dao.MatchHistoryDAO;
+import model.MatchHistory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +26,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-@WebServlet("/option")
+@WebServlet({"/option", "/profile"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,      // 1MB
         maxFileSize = 3 * 1024 * 1024,       // 3MB
@@ -33,6 +35,7 @@ import javax.imageio.ImageIO;
 public class OptionServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
+    private final MatchHistoryDAO matchHistoryDAO = new MatchHistoryDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,6 +59,16 @@ public class OptionServlet extends HttpServlet {
         int myRank = userDAO.getUserRank(currentUser.getId());
         request.setAttribute("user", currentUser);
         request.setAttribute("myRank", myRank);
+
+        // Lấy danh sách 30 trận đấu gần nhất của người dùng
+        List<MatchHistory> matchHistoryList = matchHistoryDAO.getRecentMatchesByUserId(currentUser.getId(), 30);
+        request.setAttribute("matchHistoryList", matchHistoryList);
+
+        // Tab kích hoạt mặc định (nếu có tham số ?tab=...)
+        String tabParam = request.getParameter("tab");
+        if (tabParam != null && !tabParam.trim().isEmpty()) {
+            request.setAttribute("activeTab", tabParam.trim());
+        }
 
         // Danh sách 12 avatar có sẵn
         List<String> presetAvatars = new ArrayList<>();
@@ -117,7 +130,7 @@ public class OptionServlet extends HttpServlet {
                 break;
         }
 
-        response.sendRedirect(request.getContextPath() + "/option");
+        response.sendRedirect(request.getContextPath() + request.getServletPath());
     }
 
     private void handleChangeAvatar(HttpServletRequest request, HttpSession session, User user) {

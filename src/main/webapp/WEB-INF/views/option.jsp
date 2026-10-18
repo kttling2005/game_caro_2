@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="model.User"%>
+<%@page import="model.MatchHistory"%>
 <%@page import="java.util.List"%>
 
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XO Game - Cài Đặt & Hồ Sơ</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/option.css?v=3">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/option.css?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -23,7 +24,7 @@
             </a>
         </div>
         <div class="option-title">
-            GAME OPTIONS & PROFILE
+            PLAYER PROFILE & CAREER
         </div>
         <div class="option-header-side option-header-right">
             <button type="button"
@@ -51,19 +52,23 @@
         </div>
     <% } %>
 
-    <!-- TABS NAVIGATION -->
+    <%
+        String activeTab = (String) request.getAttribute("activeTab");
+        if (activeTab == null || activeTab.trim().isEmpty()) {
+            activeTab = "profile";
+        }
+    %>
+
+    <!-- TABS NAVIGATION (3 TABS) -->
     <div class="option-tabs">
-        <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile')">
-            👤 Hồ Sơ & Avatar
+        <button class="tab-btn <%= "profile".equals(activeTab) ? "active" : "" %>" id="tab-btn-profile" onclick="switchTab('profile')">
+            👤 Hồ Sơ & Bảo Mật
         </button>
-        <button class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">
-            ⚙️ Cài Đặt & Âm Thanh
+        <button class="tab-btn <%= "history".equals(activeTab) ? "active" : "" %>" id="tab-btn-history" onclick="switchTab('history')">
+            📜 Lịch Sử Đấu
         </button>
-        <button class="tab-btn" id="tab-btn-security" onclick="switchTab('security')">
-            🔒 Đổi Mật Khẩu
-        </button>
-        <button class="tab-btn" id="tab-btn-rules" onclick="switchTab('rules')">
-            📖 Hướng Dẫn & Bảng Rank
+        <button class="tab-btn <%= "ranks".equals(activeTab) ? "active" : "" %>" id="tab-btn-ranks" onclick="switchTab('ranks')">
+            🏆 Bảng Bậc Rank
         </button>
     </div>
 
@@ -71,11 +76,12 @@
         User u = (User) request.getAttribute("user");
         Integer myRank = (Integer) request.getAttribute("myRank");
         List<String> presetAvatars = (List<String>) request.getAttribute("presetAvatars");
+        List<MatchHistory> matchHistoryList = (List<MatchHistory>) request.getAttribute("matchHistoryList");
         String currentAvatarUrl = (u != null) ? u.getAvatarUrl(request.getContextPath()) : request.getContextPath() + "/assets/avatars/avatar1.svg";
     %>
 
     <!-- TAB 1: PROFILE & AVATAR -->
-    <div class="tab-panel active" id="tab-profile">
+    <div class="tab-panel <%= "profile".equals(activeTab) ? "active" : "" %>" id="tab-profile">
         <div class="profile-grid">
 
             <!-- LEFT: PROFILE SUMMARY CARD -->
@@ -193,122 +199,177 @@
                     </button>
                 </form>
 
+                <!-- 3. BẢO MẬT & ĐỔI MẬT KHẨU TÀI KHOẢN -->
+                <div class="section-title" style="margin-top: 26px;">
+                    <span>🔒</span> Bảo Mật & Đổi Mật Khẩu Tài Khoản
+                </div>
+
+                <form action="${pageContext.request.contextPath}/option" method="POST" class="security-box" style="background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,232,120,0.25); border-radius: 14px; padding: 18px 20px;">
+                    <input type="hidden" name="action" value="changePassword">
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" style="font-size: 12px; text-align: left;">Mật Khẩu Hiện Tại:</label>
+                            <input type="password" name="currentPassword" class="form-control" placeholder="••••••••" required style="padding: 9px 12px; font-size: 13.5px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" style="font-size: 12px; text-align: left;">Mật Khẩu Mới:</label>
+                            <input type="password" name="newPassword" class="form-control" placeholder="Tối thiểu 6 ký tự" minlength="6" required style="padding: 9px 12px; font-size: 13.5px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" style="font-size: 12px; text-align: left;">Xác Nhận Mật Khẩu:</label>
+                            <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" minlength="6" required style="padding: 9px 12px; font-size: 13.5px;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="padding: 9px 20px; font-size: 13.5px;">
+                        🔑 Cập Nhật Mật Khẩu Mới
+                    </button>
+                </form>
+
             </div>
 
         </div>
     </div>
 
-    <!-- TAB 2: SETTINGS & AUDIO -->
-    <div class="tab-panel" id="tab-settings">
-        <div class="settings-list">
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <div class="setting-title">🔊 Hiệu Ứng Âm Thanh Nước Đi (SFX)</div>
-                    <div class="setting-desc">Phát tiếng cờ "cắc" vui tai khi đặt quân và chuông chiến thắng</div>
+    <!-- TAB: MATCH HISTORY -->
+    <div class="tab-panel <%= "history".equals(activeTab) ? "active" : "" %>" id="tab-history">
+        <div class="history-container">
+            <!-- OVERVIEW STATS BANNER -->
+            <div class="history-stats-banner">
+                <div class="h-stat-item">
+                    <span class="h-stat-label">Tổng Trận Đấu</span>
+                    <span class="h-stat-val text-white"><%= u != null ? u.getTotalMatches() : 0 %></span>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="sfxToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <div class="setting-title">🎵 Nhạc Nền Thư Giãn (BGM)</div>
-                    <div class="setting-desc">Phát giai điệu retro 8-bit lặp lại khi ván đấu bắt đầu. Bật công tắc để nghe thử ngay.</div>
+                <div class="h-stat-item">
+                    <span class="h-stat-label">Tỷ Lệ Thắng</span>
+                    <span class="h-stat-val text-gold"><%= u != null ? u.getWinRate() : "0.0" %>%</span>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="bgmToggle" onchange="onBgmToggleChange(this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <div class="setting-title">🎚️ Âm Lượng Tổng Thể</div>
-                    <div class="setting-desc">Điều chỉnh độ to nhỏ của âm thanh trong trò chơi</div>
+                <div class="h-stat-item">
+                    <span class="h-stat-label">Thắng - Hòa - Thua</span>
+                    <span class="h-stat-val">
+                        <span class="c-win"><%= u != null ? u.getWins() : 0 %> W</span> - 
+                        <span class="c-draw"><%= u != null ? u.getDraws() : 0 %> D</span> - 
+                        <span class="c-loss"><%= u != null ? u.getLosses() : 0 %> L</span>
+                    </span>
                 </div>
-                <div class="range-slider-wrap">
-                    <input type="range" id="volumeSlider" class="range-slider" min="0" max="100" value="80" oninput="updateVolumeDisplay(this.value)">
-                    <span id="volumeValue" style="font-weight: 700; color: #00e878; width: 45px;">80%</span>
+                <div class="h-stat-item">
+                    <span class="h-stat-label">Điểm Xếp Hạng</span>
+                    <span class="h-stat-val text-gold">⭐ <%= u != null ? u.getScore() : 1000 %> pts</span>
                 </div>
             </div>
 
-            <div class="setting-item">
-                <div class="setting-info">
-                    <div class="setting-title">📐 Hiển Thị Tọa Độ Bàn Cờ</div>
-                    <div class="setting-desc">Hiện các chữ cái (A-O) và số (1-15) quanh mép bàn cờ caro</div>
+            <!-- FILTER & TITLE BAR -->
+            <div class="history-filter-bar">
+                <div class="history-title-wrap">
+                    <h3 class="history-section-title">Danh Sách Trận Gần Nhất</h3>
+                    <span class="history-count-badge"><%= matchHistoryList != null ? matchHistoryList.size() : 0 %> trận</span>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="coordsToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <div class="setting-title">✨ Làm Nổi Bật Nước Cờ Gần Nhất</div>
-                    <div class="setting-desc">Hiển thị viền vàng nhấp nháy tại ô cờ vừa được đánh</div>
+                <div class="history-filter-buttons">
+                    <button type="button" class="h-filter-btn active" onclick="filterMatches('all', this)">Tất cả</button>
+                    <button type="button" class="h-filter-btn" onclick="filterMatches('win', this)">🏆 Thắng</button>
+                    <button type="button" class="h-filter-btn" onclick="filterMatches('loss', this)">💔 Thua</button>
+                    <button type="button" class="h-filter-btn" onclick="filterMatches('draw', this)">🤝 Hòa</button>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="highlightToggle" checked>
-                    <span class="slider"></span>
-                </label>
             </div>
 
-            <div style="margin-top: 10px;">
-                <button type="button" class="btn-primary" onclick="saveGameSettings()">
-                    💾 Lưu Thiết Lập Cài Đặt
-                </button>
-                <button type="button" class="back-btn" onclick="playSoundMove()" style="margin-left: 10px;">
-                    🔊 Nghe Thử SFX
-                </button>
-            </div>
+            <!-- MATCH CARDS LIST -->
+            <div class="history-list" id="historyMatchesList">
+                <%
+                    if (matchHistoryList == null || matchHistoryList.isEmpty()) {
+                %>
+                    <div class="history-empty">
+                        <div class="empty-icon">🎮</div>
+                        <div class="empty-title">Chưa có lịch sử đấu</div>
+                        <p class="empty-desc">Bạn chưa tham gia trận đấu nào. Hãy vào "New Game" hoặc "Find Match" để bắt đầu so tài và leo rank nhé!</p>
+                        <a href="<%= request.getContextPath() %>/game" class="empty-action-btn">⚔️ Chơi Ngay</a>
+                    </div>
+                <%
+                    } else {
+                        for (MatchHistory m : matchHistoryList) {
+                            String res = (u != null) ? m.getResultForUser(u.getId()) : "DRAW"; // "WIN", "LOSS", "DRAW"
+                            User opp = (u != null) ? m.getOpponent(u.getId()) : null;
+                            int scoreChange = (u != null) ? m.getScoreChangeForUser(u.getId()) : 0;
+                            String cardClass = "card-win";
+                            String badgeText = "CHIẾN THẮNG";
+                            String badgeIcon = "🏆";
+                            String scoreClass = "score-plus";
+                            String scoreText = "+" + scoreChange;
 
+                            if ("LOSS".equals(res)) {
+                                cardClass = "card-loss";
+                                badgeText = "THẤT BẠI";
+                                badgeIcon = "💔";
+                                scoreClass = "score-minus";
+                                scoreText = String.valueOf(scoreChange);
+                            } else if ("DRAW".equals(res)) {
+                                cardClass = "card-draw";
+                                badgeText = "HÒA CỜ";
+                                badgeIcon = "🤝";
+                                scoreClass = "score-draw";
+                                scoreText = "+" + scoreChange;
+                            }
+
+                            String oppName = (opp != null && opp.getNickname() != null && !opp.getNickname().isEmpty())
+                                            ? opp.getNickname()
+                                            : ((opp != null) ? opp.getUsername() : "Đối thủ");
+                            String oppUsername = (opp != null && opp.getUsername() != null) ? "@" + opp.getUsername() : "";
+                            String oppAvatar = (opp != null) ? opp.getAvatarUrl(request.getContextPath()) : request.getContextPath() + "/assets/avatars/default.svg";
+                            String oppRank = (opp != null) ? opp.getRankBadge() : "🥉 Đồng";
+                %>
+                    <div class="match-card <%= cardClass %>" data-result="<%= res.toLowerCase() %>">
+                        <!-- RESULT BADGE -->
+                        <div class="match-result-badge">
+                            <span class="m-badge-icon"><%= badgeIcon %></span>
+                            <span class="m-badge-text"><%= badgeText %></span>
+                        </div>
+
+                        <!-- OPPONENT INFO -->
+                        <div class="match-opponent-info">
+                            <div class="m-opp-avatar">
+                                <img src="<%= oppAvatar %>" alt="Opponent" width="46" height="46">
+                            </div>
+                            <div class="m-opp-meta">
+                                <div class="m-opp-title">Đấu với</div>
+                                <div class="m-opp-name"><%= oppName %> <span class="m-opp-user"><%= oppUsername %></span></div>
+                                <div class="m-opp-rank"><%= oppRank %></div>
+                            </div>
+                        </div>
+
+                        <!-- MATCH STATS -->
+                        <div class="match-stats-col">
+                            <div class="m-stat-item" title="Số nước cờ">
+                                <span class="m-icon">🎯</span>
+                                <span><%= m.getTotalMoves() %> nước</span>
+                            </div>
+                            <div class="m-stat-item" title="Thời lượng trận đấu">
+                                <span class="m-icon">⏱️</span>
+                                <span><%= m.getFormattedDuration() %></span>
+                            </div>
+                            <div class="m-stat-item" title="Thời điểm thi đấu">
+                                <span class="m-icon">📅</span>
+                                <span><%= m.getTimeAgo() %></span>
+                            </div>
+                        </div>
+
+                        <!-- SCORE BADGE -->
+                        <div class="match-score-badge <%= scoreClass %>">
+                            <span class="m-score-val"><%= scoreText %></span>
+                            <span class="m-score-sub">Điểm Rank</span>
+                        </div>
+                    </div>
+                <%
+                        }
+                    }
+                %>
+            </div>
         </div>
     </div>
 
-    <!-- TAB 3: SECURITY / PASSWORD -->
-    <div class="tab-panel" id="tab-security">
-        <form action="${pageContext.request.contextPath}/option" method="POST" style="max-width: 480px;">
-            <input type="hidden" name="action" value="changePassword">
-
-            <div class="form-group">
-                <label class="form-label">Mật Khẩu Hiện Tại:</label>
-                <input type="password" name="currentPassword" class="form-control" placeholder="••••••••" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Mật Khẩu Mới:</label>
-                <input type="password" name="newPassword" class="form-control" placeholder="Tối thiểu 6 ký tự" minlength="6" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Xác Nhận Mật Khẩu Mới:</label>
-                <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" minlength="6" required>
-            </div>
-
-            <button type="submit" class="btn-primary" style="margin-top: 10px;">
-                🔑 Cập Nhật Mật Khẩu
-            </button>
-        </form>
-    </div>
-
-    <!-- TAB 4: RULES & RANK GUIDE -->
-    <div class="tab-panel" id="tab-rules">
-        <div class="guide-card">
-            <div class="guide-title">
-                <span>⚔️</span> Luật Thi Đấu Cờ Caro (XO Game Conqueror)
-            </div>
-            <div class="guide-text">
-                • Bàn cờ tiêu chuẩn kích thước <strong>15 x 15</strong> ô vuông.<br>
-                • Hai người chơi luân phiên đặt ký hiệu <strong>X</strong> và <strong>O</strong> vào các ô trống.<br>
-                • <strong>Điều kiện thắng:</strong> Người chơi đầu tiên tạo được một hàng gồm <strong>5 quân cờ liên tiếp</strong> theo hàng ngang, hàng dọc hoặc đường chéo sẽ giành chiến thắng ngay lập tức.<br>
-                • <strong>Thời gian:</strong> Mỗi lượt đi có <strong>60 giây</strong> suy nghĩ. Nếu hết thời gian mà chưa đánh, người chơi sẽ bị xử thua cuộc do quá giờ.
-            </div>
-        </div>
-
+    <!-- TAB 3: RANK TIERS & SCORING -->
+    <div class="tab-panel <%= "ranks".equals(activeTab) ? "active" : "" %>" id="tab-ranks">
         <div class="guide-card">
             <div class="guide-title">
                 <span>🏆</span> Quy Chế Tính Điểm & Xếp Hạng (Rank System)
@@ -365,12 +426,13 @@
 
         <div class="guide-card" style="margin-bottom: 0;">
             <div class="guide-title">
-                <span>ℹ️</span> Thông Tin Ứng Dụng
+                <span>⚙️</span> Cài Đặt Trò Chơi & Luật Thi Đấu
             </div>
             <div class="guide-text">
-                • <strong>Phiên bản:</strong> XO Game Conqueror v2.0 Professional<br>
-                • <strong>Công nghệ:</strong> Java Jakarta EE 10, WebSocket RFC 6455, MySQL 8 / MariaDB, Web Audio API.<br>
-                • Chúc bạn có những phút giây thi đấu trí tuệ đỉnh cao!
+                Bạn muốn tùy chỉnh nhạc nền, âm thanh nước đi hoặc xem luật thi đấu 15x15?
+                <a href="${pageContext.request.contextPath}/settings" style="color: #00e878; font-weight: 700; text-decoration: underline; margin-left: 6px;">
+                    👉 Mở Cài Đặt & Luật Chơi
+                </a>
             </div>
         </div>
     </div>
