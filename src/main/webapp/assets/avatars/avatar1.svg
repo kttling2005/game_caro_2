@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Ninja: Shadow Assassin -->
+  <defs>
+    <radialGradient id="bg1" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#37474f"/>
+      <stop offset="100%" stop-color="#102027"/>
+    </radialGradient>
+    <linearGradient id="band" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e53935"/>
+      <stop offset="100%" stop-color="#b71c1c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bg1)" stroke="#e53935" stroke-width="4"/>
+  <!-- Head & Mask -->
+  <circle cx="50" cy="45" r="24" fill="#212121"/>
+  <rect x="26" y="32" width="48" height="9" rx="3" fill="url(#band)"/>
+  <circle cx="50" cy="36.5" r="3.5" fill="#ffd54f"/>
+  <!-- Eye slit -->
+  <rect x="33" y="44" width="34" height="11" rx="3" fill="#ffe0b2"/>
+  <!-- Glowing Eyes -->
+  <ellipse cx="42" cy="49" rx="3.5" ry="2" fill="#00e5ff"/>
+  <ellipse cx="58" cy="49" rx="3.5" ry="2" fill="#00e5ff"/>
+  <!-- Ninja Scarf / Shoulders -->
+  <path d="M20 86 C20 68 34 64 50 64 C66 64 80 68 80 86 Z" fill="#1b1b1b"/>
+  <path d="M36 64 L50 76 L64 64 Z" fill="url(#band)"/>
+</svg>

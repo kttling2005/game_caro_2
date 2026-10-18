@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Gamer Girl: Tactical Queen -->
+  <defs>
+    <radialGradient id="bg5" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff4081"/>
+      <stop offset="100%" stop-color="#880e4f"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bg5)" stroke="#ff4081" stroke-width="4"/>
+  <!-- Long Hair Background -->
+  <path d="M26 46 C24 68 28 82 32 88 L68 88 C72 82 76 68 74 46 Z" fill="#9c27b0"/>
+  <!-- Face -->
+  <circle cx="50" cy="46" r="18" fill="#ffe0b2"/>
+  <!-- Cute Bangs -->
+  <path d="M32 40 C38 32 62 32 68 40 C62 36 56 36 50 38 C44 36 38 36 32 40 Z" fill="#7b1fa2"/>
+  <!-- Eyes -->
+  <ellipse cx="43" cy="46" rx="2.5" ry="3.5" fill="#311b92"/>
+  <ellipse cx="57" cy="46" rx="2.5" ry="3.5" fill="#311b92"/>
+  <circle cx="44" cy="45" r="1" fill="#ffffff"/>
+  <circle cx="58" cy="45" r="1" fill="#ffffff"/>
+  <!-- Cat Ear Headset -->
+  <path d="M26 40 C26 23 74 23 74 40" fill="none" stroke="#212121" stroke-width="5"/>
+  <polygon points="32,24 26,10 40,20" fill="#ff4081"/>
+  <polygon points="68,24 74,10 60,20" fill="#ff4081"/>
+  <rect x="22" y="36" width="8" height="15" rx="3" fill="#ff4081"/>
+  <rect x="70" y="36" width="8" height="15" rx="3" fill="#ff4081"/>
+  <!-- Jacket -->
+  <path d="M22 88 C22 68 36 65 50 65 C64 65 78 68 78 88 Z" fill="#ffffff"/>
+</svg>

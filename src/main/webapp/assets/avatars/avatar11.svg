@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Astronaut: Cosmos Explorer -->
+  <defs>
+    <radialGradient id="bg11" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#311b92"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <linearGradient id="visor" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd54f"/>
+      <stop offset="50%" stop-color="#ff6d00"/>
+      <stop offset="100%" stop-color="#d500f9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bg11)" stroke="#b388ff" stroke-width="4"/>
+  <!-- Helmet Outer -->
+  <circle cx="50" cy="46" r="24" fill="#eceff1" stroke="#b0bec5" stroke-width="2"/>
+  <!-- Golden Reflective Visor -->
+  <ellipse cx="50" cy="46" rx="16" ry="13" fill="url(#visor)"/>
+  <!-- Visor Glare / Reflection -->
+  <path d="M40 38 Q48 36 54 39" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <!-- Spacesuit Collar / Shoulders -->
+  <path d="M22 88 C22 70 32 68 50 68 C68 68 78 70 78 88 Z" fill="#cfd8dc"/>
+  <rect x="42" y="74" width="16" height="8" rx="2" fill="#37474f"/>
+  <circle cx="46" cy="78" r="2" fill="#00e676"/>
+  <circle cx="54" cy="78" r="2" fill="#00e5ff"/>
+</svg>

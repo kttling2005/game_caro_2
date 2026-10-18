@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Caro Queen: Empress -->
+  <defs>
+    <radialGradient id="bg8" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ad1457"/>
+      <stop offset="100%" stop-color="#4a0072"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bg8)" stroke="#ea80fc" stroke-width="4"/>
+  <!-- Hair & Tiara -->
+  <path d="M28 42 C28 26 40 22 50 22 C60 22 72 26 72 42 L74 68 C74 78 26 78 26 68 Z" fill="#212121"/>
+  <polygon points="36,26 42,20 50,14 58,20 64,26 50,22" fill="#ffd700"/>
+  <circle cx="50" cy="14" r="2.5" fill="#00e676"/>
+  <!-- Face -->
+  <circle cx="50" cy="46" r="16" fill="#ffe0b2"/>
+  <!-- Eyes with Eyelashes -->
+  <path d="M40 46 Q44 43 46 46" fill="none" stroke="#212121" stroke-width="2"/>
+  <path d="M54 46 Q56 43 60 46" fill="none" stroke="#212121" stroke-width="2"/>
+  <circle cx="43" cy="48" r="2" fill="#4a148c"/>
+  <circle cx="57" cy="48" r="2" fill="#4a148c"/>
+  <!-- Lips -->
+  <path d="M47 56 Q50 58 53 56" fill="none" stroke="#d81b60" stroke-width="2"/>
+  <!-- Royal Robe -->
+  <path d="M22 88 C22 68 34 66 50 66 C66 66 78 68 78 88 Z" fill="#7b1fa2"/>
+  <circle cx="50" cy="74" r="4" fill="#00e676"/>
+</svg>

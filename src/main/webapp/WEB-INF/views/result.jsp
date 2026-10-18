@@ -1,222 +1,117 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="model.User"%>
+
+<%
+    Boolean isWin = (Boolean) request.getAttribute("isWin");
+    Boolean isDraw = (Boolean) request.getAttribute("isDraw");
+    if (isWin == null) isWin = false;
+    if (isDraw == null) isDraw = false;
+
+    String moves = (String) request.getAttribute("moves");
+    String time = (String) request.getAttribute("time");
+    User currentUser = (User) request.getAttribute("currentUser");
+
+    String statusText = isWin ? "VICTORY!" : (isDraw ? "HÒA CỜ!" : "DEFEAT!");
+    String trophyIcon = isWin ? "🏆" : (isDraw ? "🤝" : "💔");
+    String winnerText = isWin ? "Bạn đã giành chiến thắng xuất sắc!" : (isDraw ? "Hai kỳ thủ bất phân thắng bại!" : "Rất tiếc, bạn đã nhận thất bại!");
+    String ratingText = isWin ? "+25" : (isDraw ? "+5" : "-15");
+    String ratingClass = (isWin || isDraw) ? "rating-up" : "rating-down";
+%>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>XO Game - Result</title>
-
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/result.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap"
-          rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XO Game - Kết Quả Trận Đấu</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/result.css">
+    <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet">
+    <style>
+        .rating-down {
+            color: #ff5252 !important;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="result-page">
 
-
     <!-- BACK TO HOME -->
-
-    <button class="back-button"
-            onclick="goHome()">
-
+    <button class="back-button" onclick="goHome()">
         ← Back
-
     </button>
 
-
     <!-- TITLE -->
-
     <div class="result-title">
-
-        GAME RESULT
-
+        KẾT QUẢ VÁN ĐẤU
     </div>
-
 
     <!-- RESULT CARD -->
-
     <div class="result-card">
 
-
         <!-- TROPHY -->
-
         <div class="trophy">
-
-            🏆
-
+            <%= trophyIcon %>
         </div>
-
 
         <!-- RESULT -->
-
         <div class="result-status">
-
-            VICTORY!
-
+            <%= statusText %>
         </div>
-
 
         <!-- PLAYER -->
-
         <div class="winner-avatar">
-
             🧑🏻‍💻
-
         </div>
-
 
         <div class="winner-name">
-
-            Player 1
-
+            <%= currentUser != null ? currentUser.getNickname() : "Bạn" %>
         </div>
-
 
         <div class="winner-text">
-
-            You won the game!
-
+            <%= winnerText %>
         </div>
-
-
-        <!-- SCORE -->
-
-        <div class="score">
-
-            <div class="player-result">
-
-                <div class="result-avatar">
-                    🧑🏻‍💻
-                </div>
-
-                <div class="result-player-name">
-                    Player 1
-                </div>
-
-                <div class="result-symbol x">
-                    X
-                </div>
-
-            </div>
-
-
-            <div class="score-value">
-
-                1 - 0
-
-            </div>
-
-
-            <div class="player-result">
-
-                <div class="result-symbol o">
-                    O
-                </div>
-
-                <div class="result-player-name">
-                    Player 2
-                </div>
-
-                <div class="result-avatar">
-                    🐱
-                </div>
-
-            </div>
-
-        </div>
-
 
         <!-- GAME INFORMATION -->
-
         <div class="game-info">
-
             <div>
-
-                <span>
-                    Moves
-                </span>
-
-                <strong>
-                    87
-                </strong>
-
+                <span>Số nước đi</span>
+                <strong><%= moves %></strong>
             </div>
 
-
             <div>
-
-                <span>
-                    Time
-                </span>
-
-                <strong>
-                    04:32
-                </strong>
-
+                <span>Thời gian</span>
+                <strong><%= time %></strong>
             </div>
 
-
             <div>
-
-                <span>
-                    Rating
-                </span>
-
-                <strong class="rating-up">
-                    +25
-                </strong>
-
+                <span>Điểm Rank</span>
+                <strong class="<%= ratingClass %>"><%= ratingText %></strong>
             </div>
-
         </div>
 
-
     </div>
-
 
     <!-- BUTTONS -->
-
     <div class="action-buttons">
-
         <button onclick="playAgain()">
-
-            Play Again
-
+            Chơi Tiếp
         </button>
-
 
         <button onclick="viewRanking()">
-
-            Ranking
-
+            Bảng Xếp Hạng
         </button>
-
 
         <button onclick="goHome()">
-
-            Home
-
+            Trang Chủ
         </button>
-
     </div>
 
-
 </div>
-
 
 <script src="${pageContext.request.contextPath}/js/result.js"></script>
 
 </body>
-
 </html>

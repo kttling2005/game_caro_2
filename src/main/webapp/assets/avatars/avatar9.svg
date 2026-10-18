@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fire Dragon: Flame Tyrant -->
+  <defs>
+    <radialGradient id="bg9" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff3d00"/>
+      <stop offset="100%" stop-color="#bf360c"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bg9)" stroke="#ffd600" stroke-width="4"/>
+  <!-- Dragon Horns -->
+  <path d="M34 32 C26 20 20 12 18 10 C26 14 34 22 36 30 Z" fill="#212121"/>
+  <path d="M66 32 C74 20 80 12 82 10 C74 14 66 22 64 30 Z" fill="#212121"/>
+  <!-- Dragon Head -->
+  <path d="M30 42 C30 28 40 26 50 26 C60 26 70 28 70 42 L66 62 C64 70 58 74 50 74 C42 74 36 70 34 62 Z" fill="#d50000"/>
+  <!-- Glowing Eyes -->
+  <polygon points="38,42 46,40 44,46 38,46" fill="#ffeb3b"/>
+  <polygon points="62,42 54,40 56,46 62,46" fill="#ffeb3b"/>
+  <!-- Snout & Nostrils -->
+  <path d="M40 58 L50 64 L60 58 Z" fill="#b71c1c"/>
+  <circle cx="46" cy="62" r="1.5" fill="#ffd600"/>
+  <circle cx="54" cy="62" r="1.5" fill="#ffd600"/>
+  <!-- Neck Scales -->
+  <path d="M24 88 C24 72 36 70 50 70 C64 70 76 72 76 88 Z" fill="#b71c1c"/>
+</svg>

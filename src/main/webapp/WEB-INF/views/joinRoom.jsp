@@ -47,6 +47,12 @@
 
     <div class="room-panel">
 
+        <% if (request.getAttribute("error") != null) { %>
+            <div style="background: rgba(220, 53, 69, 0.3); border: 1px solid #ff4d5e; color: #ff9da6; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-family: sans-serif; font-size: 13px; text-align: center;">
+                ⚠️ <%= request.getAttribute("error") %>
+            </div>
+        <% } %>
+
         <form action="${pageContext.request.contextPath}/join-room"
               method="POST">
 

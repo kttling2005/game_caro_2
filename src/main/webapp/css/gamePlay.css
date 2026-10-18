@@ -63,108 +63,105 @@ body {
 
 
 /* =========================
-   BACK
+   HEADER
    ========================= */
+
+.game-header {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 50;
+    box-sizing: border-box;
+}
 
 .back-button {
-
-    position: absolute;
-
-    top: 22px;
-    left: 28px;
-
-    z-index: 50;
-
-    width: 55px;
-    height: 55px;
-
-    border: 3px solid #637e3c;
-
-    background: rgba(20, 45, 23, 0.9);
-
-    color: #fff0a0;
-
-    font-family: 'Irish Grover', cursive;
-
-    font-size: 30px;
-
+    position: static;
+    width: 44px;
+    height: 44px;
+    border: 2px solid #00e878;
+    background: rgba(4, 18, 9, 0.9);
+    color: #00e878;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 12px;
     cursor: pointer;
-
-    box-shadow:
-        0 4px 0 #10200f;
-
-    transition: 0.2s;
+    box-shadow: 0 0 12px rgba(0, 232, 120, 0.35);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
-
 
 .back-button:hover {
-
     transform: scale(1.08);
-
-    color: #ffffff;
-
+    background: #00e878;
+    color: #06140b;
+    box-shadow: 0 0 15px rgba(0, 232, 120, 0.6);
 }
-
-
-/* =========================
-   TITLE
-   ========================= */
 
 .game-title {
-
-    position: absolute;
-
-    top: 20px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    z-index: 20;
-
-    color: #fff0a0;
-
+    position: static;
+    transform: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     font-family: 'Irish Grover', cursive;
-
-    font-size: 38px;
-
-    letter-spacing: 4px;
-
-    text-shadow:
-        3px 3px 0 #162616;
-
+    color: #fff0a0;
+    font-size: 26px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #162616;
+    white-space: nowrap;
 }
 
+.room-pill {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    background: rgba(4, 18, 9, 0.88);
+    border: 1.5px solid #00e878;
+    border-radius: 20px;
+    padding: 4px 16px;
+    color: #a0d8b5;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(0, 232, 120, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.room-pill strong {
+    color: #ffd700;
+}
+
+.header-spacer {
+    width: 44px;
+}
 
 /* =========================
    MAIN LAYOUT
    ========================= */
 
 .game-layout {
-
     position: absolute;
-
     z-index: 10;
-
-    top: 10%;
-
+    top: 58px;
     left: 50%;
-
     transform: translateX(-50%);
-
-    width: 90%;
-
-    max-width: 1250px;
-
-    height: 65%;
-
+    width: 96%;
+    max-width: 1260px;
+    height: calc(100vh - 165px);
+    max-height: 560px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
-    gap: 35px;
-
+    gap: 28px;
 }
 
 
@@ -175,11 +172,11 @@ body {
 /*.emoji-panel,*/
 .timer-panel {
 
-    width: 180px;
+    width: 195px;
 
-    min-width: 180px;
+    min-width: 195px;
 
-    padding: 20px;
+    padding: 18px;
 
     background:
         rgba(18, 43, 23, 0.94);
@@ -195,11 +192,11 @@ body {
 .emoji-panel
 {
 
-    width: 220px;
+    width: 235px;
 
-    min-width: 180px;
+    min-width: 220px;
 
-    padding: 20px;
+    padding: 18px;
 
     background:
         rgba(18, 43, 23, 0.94);
@@ -219,7 +216,7 @@ body {
 
 .panel-title {
 
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 
     text-align: center;
 
@@ -227,7 +224,7 @@ body {
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 23px;
+    font-size: 24px;
 
     text-shadow:
         2px 2px 0 #172313;
@@ -355,14 +352,16 @@ body {
 
 .emoji-list button {
 
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
 
     border: 2px solid #59773a;
 
     background: #203d25;
 
-    font-size: 22px;
+    font-size: 24px;
+
+    border-radius: 8px;
 
     cursor: pointer;
 
@@ -409,17 +408,80 @@ body {
 
 .turn-text {
 
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 
-    color: #fff0a0;
+    color: #ffd700;
 
-    font-family: 'Irish Grover', cursive;
+    font-family: 'Montserrat', sans-serif;
 
-    font-size: 25px;
+    font-weight: 700;
+
+    font-size: 22px;
 
     text-shadow:
-        2px 2px 0 #172313;
+        0 0 10px rgba(0,0,0,0.9),
+        1px 1px 2px #000;
 
+    letter-spacing: 0.5px;
+
+}
+
+
+/* =========================
+   COORDINATES
+   ========================= */
+
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.board-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coords-top,
+.coords-bottom {
+    width: min(52vh, 500px);
+    height: 18px;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    box-sizing: border-box;
+    padding: 0 11px;
+}
+
+.coords-left,
+.coords-right {
+    height: min(52vh, 500px);
+    width: 18px;
+    display: grid;
+    grid-template-rows: repeat(15, 1fr);
+    box-sizing: border-box;
+    padding: 11px 0;
+}
+
+.coord-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+    user-select: none;
+    pointer-events: none;
+}
+
+.board-wrapper.no-coords .coords-top,
+.board-wrapper.no-coords .coords-bottom,
+.board-wrapper.no-coords .coords-left,
+.board-wrapper.no-coords .coords-right {
+    display: none !important;
 }
 
 
@@ -429,9 +491,9 @@ body {
 
 .board {
 
-    width: min(58vh, 650px);
+    width: min(52vh, 500px);
 
-    height: min(58vh, 650px);
+    height: min(52vh, 500px);
 
     display: grid;
 
@@ -445,11 +507,13 @@ body {
 
     background: #bd954c;
 
-    border: 5px solid #432e17;
+    border: 4px solid #432e17;
+
+    border-radius: 8px;
 
     box-shadow:
-        0 0 0 5px #172916,
-        0 9px 0 #10200f;
+        0 0 0 4px #172916,
+        0 8px 0 #10200f;
 
 }
 
@@ -519,6 +583,122 @@ body {
 
 
 /* =========================
+   HIGHLIGHT LAST MOVE (CHAMPIONSHIP STYLE)
+   ========================= */
+
+.cell.last-move {
+    position: relative;
+    background: radial-gradient(circle at center, #fff8d6 10%, #ffe082 55%, #ffca28 100%) !important;
+    border: 2px solid #fff59d !important;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 179, 0, 0.6),
+        0 0 14px rgba(255, 215, 0, 0.85),
+        0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    z-index: 5;
+    animation: moveLand 0.22s ease-out, lastMoveBreath 2s infinite ease-in-out 0.22s;
+}
+
+/* Sóng lan tỏa tinh tế (Pulsing Ripple Halo) */
+.cell.last-move::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 2px solid rgba(255, 215, 0, 0.9);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: -1;
+    animation: lastMoveRipple 2s infinite cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Chỉ dấu tiêu điểm tinh tế góc trên (Target Indicator Badge) */
+.cell.last-move::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border: 1.5px solid #ffb300;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffd700;
+    pointer-events: none;
+    animation: lastMoveBadge 1s infinite alternate ease-in-out;
+}
+
+/* Tăng độ nổi khối 3D cho quân cờ X và O tại ô mới đánh */
+.cell.last-move.x {
+    color: #1b431c !important;
+    text-shadow: 0 0 6px rgba(76, 175, 80, 0.5), 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
+    font-weight: 900;
+}
+
+.cell.last-move.o {
+    color: #5d2b0e !important;
+    text-shadow: 0 0 6px rgba(255, 112, 67, 0.5), 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
+    font-weight: 900;
+}
+
+@keyframes moveLand {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.3;
+    }
+    70% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes lastMoveBreath {
+    0%, 100% {
+        box-shadow: 
+            inset 0 0 6px rgba(255, 179, 0, 0.5),
+            0 0 10px rgba(255, 215, 0, 0.7),
+            0 2px 4px rgba(0, 0, 0, 0.25);
+        border-color: #ffe082;
+    }
+    50% {
+        box-shadow: 
+            inset 0 0 10px rgba(255, 179, 0, 0.8),
+            0 0 20px rgba(255, 215, 0, 1),
+            0 0 30px rgba(255, 235, 59, 0.5);
+        border-color: #ffffff;
+    }
+}
+
+@keyframes lastMoveRipple {
+    0% {
+        transform: scale(0.96);
+        opacity: 0.9;
+    }
+    60% {
+        transform: scale(1.15);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1.18);
+        opacity: 0;
+    }
+}
+
+@keyframes lastMoveBadge {
+    0% {
+        transform: scale(0.9);
+        background: #ffffff;
+    }
+    100% {
+        transform: scale(1.2);
+        background: #fff59d;
+    }
+}
+
+
+/* =========================
    TIMER
    ========================= */
 
@@ -531,10 +711,10 @@ body {
 
 .timer-circle {
 
-    width: 115px;
-    height: 115px;
+    width: 125px;
+    height: 125px;
 
-    margin: 10px auto 15px;
+    margin: 10px auto 14px;
 
     display: flex;
 
@@ -551,7 +731,7 @@ body {
     background: #142a18;
 
     box-shadow:
-        0 0 15px rgba(215, 233, 106, 0.2);
+        0 0 15px rgba(215, 233, 106, 0.25);
 
 }
 
@@ -562,7 +742,7 @@ body {
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 42px;
+    font-size: 46px;
 
     line-height: 1;
 
@@ -575,7 +755,7 @@ body {
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 14px;
+    font-size: 15px;
 
 }
 
@@ -586,7 +766,7 @@ body {
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 17px;
+    font-size: 18px;
 
 }
 
@@ -623,15 +803,15 @@ body {
 
     z-index: 20;
 
-    bottom: 6%;
+    bottom: 12px;
 
     left: 50%;
 
     transform: translateX(-50%);
 
-    width: 80%;
+    width: 90%;
 
-    max-width: 1000px;
+    max-width: 950px;
 
     display: flex;
 
@@ -639,7 +819,7 @@ body {
 
     justify-content: center;
 
-    gap: 35px;
+    gap: 20px;
 
 }
 
@@ -650,25 +830,29 @@ body {
 
 .player-card {
 
-    width: 360px;
+    width: 345px;
 
-    min-height: 100px;
+    min-height: 80px;
+
+    height: 80px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 18px;
+    gap: 14px;
 
-    padding: 13px 20px;
+    padding: 8px 16px;
 
     background:
-        rgba(18, 43, 23, 0.95);
+        rgba(10, 28, 15, 0.96);
 
-    border: 3px solid #435f2c;
+    border: 2px solid #3d662b;
+
+    border-radius: 16px;
 
     box-shadow:
-        0 5px 0 #10200f;
+        0 4px 15px rgba(0, 0, 0, 0.6);
 
 }
 
@@ -841,8 +1025,8 @@ body {
 
 .avatar {
 
-    width: 70px;
-    height: 70px;
+    width: 58px;
+    height: 58px;
 
     flex-shrink: 0;
 
@@ -851,12 +1035,54 @@ body {
     align-items: center;
     justify-content: center;
 
-    background: #263e25;
+    background: #0c1f10;
 
-    border: 3px solid #779449;
+    border: 2px solid #00e878;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(0, 232, 120, 0.45);
 
-    font-size: 42px;
+}
 
+.avatar img {
+    width: 58px !important;
+    height: 58px !important;
+    max-width: 58px !important;
+    max-height: 58px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+.player-role-badge {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+}
+
+.role-you {
+    background: #00e878;
+    color: #06140b;
+    box-shadow: 0 0 10px rgba(0, 232, 120, 0.5);
+}
+
+.role-opponent {
+    background: #ff4444;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
+}
+
+.player-score-tag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffd700;
+    margin-top: 1px;
 }
 
 
@@ -873,20 +1099,22 @@ body {
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 24px;
+    font-size: 21px;
+
+    line-height: 1.1;
 
 }
 
 
 .player-status {
 
-    margin-top: 4px;
+    margin-top: 2px;
 
     color: #a9d25b;
 
     font-family: 'Irish Grover', cursive;
 
-    font-size: 15px;
+    font-size: 14px;
 
 }
 

@@ -130,6 +130,127 @@ body {
 
 
 /* =========================
+   TOP RIGHT PROFILE BAR
+========================= */
+.top-profile-bar {
+    position: fixed;
+    top: 22px;
+    right: 28px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(4, 18, 9, 0.88);
+    border: 2px solid #00e878;
+    border-radius: 35px;
+    padding: 6px 16px 6px 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 232, 120, 0.35);
+    backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+}
+
+.top-profile-bar:hover {
+    transform: translateY(-2px) scale(1.03);
+    border-color: #ffd700;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 232, 120, 0.6);
+    background: rgba(10, 32, 18, 0.95);
+}
+
+.top-profile-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.top-profile-avatar img {
+    width: 44px !important;
+    height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00e878;
+    background: #000;
+    display: block;
+}
+
+.top-rank-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    font-size: 10px;
+    background: #ffd700;
+    color: #06140b;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 8px;
+    line-height: 1.2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.top-profile-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.top-profile-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.top-profile-score {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #00e878;
+}
+
+.top-profile-arrow {
+    font-size: 16px;
+    opacity: 0.8;
+    transition: transform 0.25s ease;
+}
+
+.top-profile-bar:hover .top-profile-arrow {
+    transform: rotate(45deg);
+    opacity: 1;
+}
+
+/* WELCOME TEXT IN CENTER */
+.welcome-text {
+    text-align: center;
+    color: #00e878;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.45);
+    padding: 6px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 232, 120, 0.3);
+}
+
+.welcome-text strong {
+    color: #ffffff;
+}
+
+.welcome-rank {
+    color: #ffd700;
+    margin-left: 6px;
+    font-size: 14px;
+}
+
+/* =========================
    MENU
 ========================= */
 

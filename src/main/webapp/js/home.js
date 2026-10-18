@@ -14,5 +14,5 @@ function openRanking() {
 
 
 function exitGame() {
-    window.location.href = "login";
+    window.location.href = "logout";
 }
