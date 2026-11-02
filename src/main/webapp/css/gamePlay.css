@@ -770,6 +770,66 @@ body {
 
 }
 
+/* =========================
+   ACTION BUTTONS (DRAW & SURRENDER)
+   ========================= */
+
+.game-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    width: 100%;
+}
+
+.btn-action-draw {
+    background: rgba(255, 193, 7, 0.18);
+    border: 2px solid #ffc107;
+    color: #ffe66d;
+    font-family: 'Irish Grover', cursive;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-action-draw:hover {
+    background: #ffc107;
+    color: #172916;
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+}
+
+.btn-action-surrender {
+    background: rgba(244, 67, 54, 0.18);
+    border: 2px solid #ff4d5e;
+    color: #ff8a80;
+    font-family: 'Irish Grover', cursive;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-action-surrender:hover {
+    background: #ff4d5e;
+    color: #ffffff;
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(255, 77, 94, 0.5);
+}
+
 
 .timer-danger {
 

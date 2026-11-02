@@ -44,6 +44,7 @@ body {
 .game-option {
 
     position: absolute;
+    z-index: 25;
 
     border: none;
     outline: none;
@@ -111,11 +112,24 @@ body {
 
 }
 
+/* =========================
+   CHALLENGE
+   ========================= */
+
+.challenge-menu-btn {
+
+    top: 34%;
+
+    right: 13%;
+
+}
+
 .back-button {
     position: absolute;
 
-    top: 30px;
+    top: 25px;
     left: 35px;
+    z-index: 50;
 
     border: none;
     background: transparent;
@@ -202,6 +216,11 @@ body {
         top: 29%;
         left: 46%;
     }
+
+    .challenge-menu-btn {
+        top: 38%;
+        right: 8%;
+    }
 }
 
 /* =========================
@@ -212,26 +231,58 @@ body {
     position: absolute;
 
     left: 35px;
-    bottom: 35px;
+    top: 75px;
 
     width: 310px;
+    max-height: calc(100vh - 95px);
 
-    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
 
-    background: rgba(28, 48, 30, 0.62);
+    padding: 14px 16px;
+
+    background: rgba(28, 48, 30, 0.72);
 
     border: 2px solid rgba(255, 227, 107, 0.65);
 
     border-radius: 18px;
 
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 
     box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.35),
+        0 8px 25px rgba(0, 0, 0, 0.45),
         inset 0 0 15px rgba(255, 255, 255, 0.05);
 
     z-index: 10;
+}
+
+.btn-quick-challenge {
+    background: linear-gradient(135deg, #00e878, #05a855);
+    color: #04210f;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 232, 120, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+    margin-left: 6px;
+}
+
+.btn-quick-challenge:hover {
+    transform: scale(1.18);
+    box-shadow: 0 0 14px rgba(0, 232, 120, 0.8);
+    background: linear-gradient(135deg, #2aff9d, #06c967);
+}
+
+.btn-quick-challenge:active {
+    transform: scale(0.92);
 }
 
 
@@ -288,7 +339,29 @@ body {
 
     flex-direction: column;
 
-    gap: 8px;
+    gap: 6px;
+
+    overflow-y: auto;
+    max-height: calc(100vh - 180px);
+    padding-right: 4px;
+}
+
+.player-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.player-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+.player-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 232, 120, 0.45);
+    border-radius: 10px;
+}
+
+.player-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 232, 120, 0.85);
 }
 
 
@@ -323,26 +396,25 @@ body {
    ========================= */
 
 .player-avatar {
-    width: 42px;
-    height: 42px;
-
+    width: 44px;
+    height: 44px;
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     flex-shrink: 0;
-
     border-radius: 50%;
+    background: #0c1a0e;
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.25s ease;
+}
 
-    background: rgba(255, 255, 255, 0.18);
-
-    border: 2px solid rgba(255, 227, 107, 0.65);
-
-    font-size: 22px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.25);
+.player-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
 }
 
 
@@ -352,89 +424,154 @@ body {
 
 .player-info {
     display: flex;
-
     flex-direction: column;
-
     gap: 1px;
 }
 
-
 .player-name {
     color: #fff5b5;
-
     font-family: 'Irish Grover', cursive;
-
     font-size: 18px;
-
-    text-shadow:
-        1px 1px 0 #26351f;
+    text-shadow: 1px 1px 0 #26351f;
 }
-
 
 .player-status {
-    display: flex;
-
+    display: inline-flex;
     align-items: center;
-
     gap: 5px;
-
-    color: rgba(235, 255, 220, 0.8);
-
     font-family: Arial, sans-serif;
-
     font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 
 /* =========================
-   ONLINE DOT
+   STATUS COLORS & PULSE ANIMATIONS
    ========================= */
 
 .status-dot {
-    width: 7px;
-    height: 7px;
-
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-
-    background: #8bea70;
-
-    box-shadow:
-        0 0 6px #8bea70;
+    display: inline-block;
+    flex-shrink: 0;
 }
 
+/* 🟢 ONLINE */
+.status-online .player-avatar {
+    border: 2px solid #00e878;
+    box-shadow: 0 0 10px rgba(0, 232, 120, 0.45);
+}
+.status-online .player-avatar img {
+    filter: none;
+}
+.status-online .status-dot {
+    background: #00e878;
+    box-shadow: 0 0 6px #00e878;
+    animation: onlinePulse 1.8s infinite ease-in-out;
+}
+.status-online .status-text,
+.player-status.status-online {
+    color: #00e878;
+    text-shadow: 0 0 6px rgba(0, 232, 120, 0.35);
+}
+.player.status-online:hover {
+    background: rgba(0, 232, 120, 0.14);
+}
 
-/* =========================
-   ONLINE DOT ANIMATION
-   ========================= */
+/* ⚪ OFFLINE */
+.status-offline .player-avatar {
+    border: 2px solid rgba(135, 150, 140, 0.45);
+    box-shadow: none;
+}
+.status-offline .player-avatar img {
+    filter: grayscale(45%) opacity(0.8);
+}
+.status-offline .status-dot {
+    background: #78857c;
+    box-shadow: none;
+    animation: none;
+}
+.status-offline .status-text,
+.player-status.status-offline {
+    color: #8c9b91;
+    text-shadow: none;
+}
+.player.status-offline:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* 🔴 PLAYING */
+.status-playing .player-avatar {
+    border: 2px solid #ff4757;
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+}
+.status-playing .player-avatar img {
+    filter: none;
+}
+.status-playing .status-dot {
+    background: #ff4757;
+    box-shadow: 0 0 7px #ff4757;
+    animation: playingPulse 1.3s infinite ease-in-out;
+}
+.status-playing .status-text,
+.player-status.status-playing {
+    color: #ff5252;
+    text-shadow: 0 0 6px rgba(255, 82, 82, 0.35);
+}
+.player.status-playing:hover {
+    background: rgba(255, 71, 87, 0.14);
+}
+
+/* 🟡 IN_ROOM / WAITING */
+.status-in-room .player-avatar {
+    border: 2px solid #ffa502;
+    box-shadow: 0 0 10px rgba(255, 165, 2, 0.45);
+}
+.status-in-room .player-avatar img {
+    filter: none;
+}
+.status-in-room .status-dot {
+    background: #ffa502;
+    box-shadow: 0 0 7px #ffa502;
+    animation: inRoomPulse 1.8s infinite ease-in-out;
+}
+.status-in-room .status-text,
+.player-status.status-in-room {
+    color: #ffa502;
+    text-shadow: 0 0 6px rgba(255, 165, 2, 0.35);
+}
+.player.status-in-room:hover {
+    background: rgba(255, 165, 2, 0.14);
+}
 
 @keyframes onlinePulse {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.55;
-        transform: scale(0.8);
-    }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.8); }
 }
 
+@keyframes playingPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
 
-.status-dot {
-    animation: onlinePulse 1.8s infinite ease-in-out;
+@keyframes inRoomPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.85); }
 }
 
 @media (max-width: 900px) {
 
     .online-players {
-        width: 260px;
+        width: 280px;
 
         left: 20px;
-        bottom: 20px;
+        top: 65px;
+        bottom: auto;
 
-        padding: 14px 16px;
+        padding: 12px 14px;
+        max-height: calc(100vh - 80px);
     }
 
     .online-title {

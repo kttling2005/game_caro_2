@@ -154,7 +154,7 @@ public class UserDAO {
     public void updateStatus(int userId, String status) {
         String sql = "UPDATE users SET status = ? WHERE id = ?";
         try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, userId);
             ps.executeUpdate();
@@ -225,6 +225,43 @@ public class UserDAO {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public List<User> getOnlineUsers(int excludeUserId) {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE status != 'OFFLINE' AND id != ? ORDER BY score DESC, wins DESC LIMIT 30";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, excludeUserId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<User> searchUsers(String keyword, int excludeUserId) {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE (username LIKE ? OR nickname LIKE ?) AND id != ? ORDER BY (status != 'OFFLINE') DESC, score DESC LIMIT 20";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            String kw = "%" + (keyword != null ? keyword.trim() : "") + "%";
+            ps.setString(1, kw);
+            ps.setString(2, kw);
+            ps.setInt(3, excludeUserId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     private User mapUser(ResultSet rs) throws SQLException {

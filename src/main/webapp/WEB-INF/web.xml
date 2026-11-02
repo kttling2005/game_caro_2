@@ -7,6 +7,10 @@
             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
+    <listener>
+        <listener-class>listener.AppListener</listener-class>
+    </listener>
+
     <session-config>
         <session-timeout>
             30

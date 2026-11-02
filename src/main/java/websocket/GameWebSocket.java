@@ -59,6 +59,12 @@ public class GameWebSocket {
                 case "SURRENDER":
                     handleSurrender(userId, message);
                     break;
+                case "DRAW_REQUEST":
+                    handleDrawRequest(userId, message);
+                    break;
+                case "DRAW_RESPONSE":
+                    handleDrawResponse(userId, message);
+                    break;
                 case "TIMEOUT":
                     handleTimeout(userId, message);
                     break;
@@ -76,6 +82,15 @@ public class GameWebSocket {
                     break;
                 case "LEAVE_ROOM":
                     handleUserDeparture(userId, message.getRoomCode());
+                    break;
+                case "CHALLENGE_REQUEST":
+                    handleChallengeRequest(userId, message);
+                    break;
+                case "CHALLENGE_RESPONSE":
+                    handleChallengeResponse(userId, message);
+                    break;
+                case "CHALLENGE_CANCEL":
+                    handleChallengeCancel(userId, message);
                     break;
                 default:
                     System.out.println("Unknown action: " + action);
@@ -96,6 +111,15 @@ public class GameWebSocket {
         }
 
         userDAO.updateStatus(userId, "OFFLINE");
+
+        RoomManager.ChallengeRequest pendingChal = roomManager.getChallengeForUser(userId);
+        if (pendingChal != null) {
+            roomManager.removeChallenge(pendingChal.getChallengeId());
+            int otherId = (pendingChal.getChallengerId() == userId) ? pendingChal.getTargetId() : pendingChal.getChallengerId();
+            GameMessage msg = new GameMessage("CHALLENGE_CANCELLED");
+            msg.setMessage("Đối thủ đã ngắt kết nối.");
+            roomManager.sendToUser(otherId, msg);
+        }
 
         String roomCode = roomManager.getUserRoom(userId);
         if (roomCode != null) {
@@ -405,6 +429,49 @@ public class GameWebSocket {
         finishGame(room, winningSymbol, "SURRENDER", -1, -1);
     }
 
+    private void handleDrawRequest(int userId, GameMessage msg) {
+        String code = (msg.getRoomCode() != null) ? msg.getRoomCode().trim() : null;
+        Room room = roomManager.getRoom(code);
+        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+
+        synchronized (room) {
+            boolean isHost = (userId == room.getHostId());
+            int opponentId = isHost ? 
+                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+
+            if (opponentId > 0) {
+                User sender = userDAO.findById(userId);
+                GameMessage invite = new GameMessage("DRAW_INVITATION");
+                invite.setRoomCode(code);
+                invite.setSenderId(userId);
+                String name = (sender != null) ? (sender.getNickname() != null ? sender.getNickname() : sender.getUsername()) : "Đối thủ";
+                invite.setSenderName(name);
+                invite.setMessage("Đối thủ [" + name + "] đề nghị kết thúc hòa ván cờ (mỗi bên +5 điểm). Bạn có đồng ý không?");
+                roomManager.sendToUser(opponentId, invite);
+            }
+        }
+    }
+
+    private void handleDrawResponse(int userId, GameMessage msg) {
+        String code = (msg.getRoomCode() != null) ? msg.getRoomCode().trim() : null;
+        Room room = roomManager.getRoom(code);
+        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+
+        synchronized (room) {
+            int opponentId = (userId == room.getHostId()) ? 
+                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+
+            if (!msg.isAccepted()) {
+                GameMessage decline = new GameMessage("DRAW_DECLINED");
+                decline.setMessage("Đối thủ đã từ chối đề nghị hòa ván cờ. Trận đấu tiếp tục!");
+                roomManager.sendToUser(opponentId, decline);
+            } else {
+                System.out.println("[DRAW] Both players agreed to draw in room " + code);
+                finishGame(room, "DRAW", "MUTUAL_DRAW", -1, -1);
+            }
+        }
+    }
+
     private void handleTimeout(int userId, GameMessage msg) {
         Room room = roomManager.getRoom(msg.getRoomCode());
         if (room == null || !"PLAYING".equals(room.getStatus())) return;
@@ -627,9 +694,120 @@ public class GameWebSocket {
         gameOverMsg.setMessage(reason);
         gameOverMsg.setRow(lastRow);
         gameOverMsg.setCol(lastCol);
-        gameOverMsg.setScoreChange(25);
+        gameOverMsg.setScoreChange(winnerId != null ? 25 : 5);
 
         roomManager.broadcastToRoom(room.getRoomCode(), gameOverMsg);
+    }
+
+    private void handleChallengeRequest(int challengerId, GameMessage msg) {
+        int targetId = msg.getTargetUserId();
+        if (targetId <= 0 || targetId == challengerId) return;
+
+        // Kiểm tra đối thủ có online không
+        Session targetSession = roomManager.getSession(targetId);
+        if (targetSession == null || !targetSession.isOpen()) {
+            GameMessage busyMsg = new GameMessage("CHALLENGE_BUSY");
+            busyMsg.setMessage("Đối thủ hiện không trực tuyến hoặc đã rời kết nối!");
+            roomManager.sendToUser(challengerId, busyMsg);
+            return;
+        }
+
+        // Kiểm tra đối thủ có đang trong trận không
+        String targetRoom = roomManager.getUserRoom(targetId);
+        if (targetRoom != null) {
+            GameMessage busyMsg = new GameMessage("CHALLENGE_BUSY");
+            busyMsg.setMessage("Đối thủ hiện đang trong một trận đấu khác!");
+            roomManager.sendToUser(challengerId, busyMsg);
+            return;
+        }
+
+        // Kiểm tra đối thủ có đang có lời thách đấu đang chờ không
+        if (roomManager.getChallengeForUser(targetId) != null) {
+            GameMessage busyMsg = new GameMessage("CHALLENGE_BUSY");
+            busyMsg.setMessage("Đối thủ đang bận xử lý một lời thách đấu khác!");
+            roomManager.sendToUser(challengerId, busyMsg);
+            return;
+        }
+
+        User challenger = userDAO.findById(challengerId);
+        User target = userDAO.findById(targetId);
+        if (challenger == null || target == null) return;
+
+        String challengeId = "CHAL_" + (System.currentTimeMillis() % 10000000);
+        String chalName = challenger.getNickname() != null ? challenger.getNickname() : challenger.getUsername();
+        String tgtName = target.getNickname() != null ? target.getNickname() : target.getUsername();
+
+        RoomManager.ChallengeRequest req = new RoomManager.ChallengeRequest(
+                challengeId, challengerId, chalName, challenger.getScore(), challenger.getAvatar(),
+                targetId, tgtName
+        );
+        roomManager.addChallenge(req);
+
+        // Báo cho Challenger biết đã gửi thành công
+        GameMessage sentMsg = new GameMessage("CHALLENGE_SENT_SUCCESS");
+        sentMsg.setChallengeId(challengeId);
+        sentMsg.setTargetUserId(targetId);
+        sentMsg.setMessage("Đã gửi lời thách đấu tới " + tgtName + "!");
+        roomManager.sendToUser(challengerId, sentMsg);
+
+        // Gửi lời mời tới Target
+        GameMessage inviteMsg = new GameMessage("CHALLENGE_INVITATION");
+        inviteMsg.setChallengeId(challengeId);
+        inviteMsg.setSenderId(challengerId);
+        inviteMsg.setSenderName(chalName);
+        inviteMsg.setChallenger(challenger);
+        inviteMsg.setMessage(chalName + " (⭐ " + challenger.getScore() + " pts) gửi lời thách đấu bạn!");
+        roomManager.sendToUser(targetId, inviteMsg);
+    }
+
+    private void handleChallengeResponse(int targetId, GameMessage msg) {
+        String challengeId = msg.getChallengeId();
+        RoomManager.ChallengeRequest req = roomManager.getChallenge(challengeId);
+        if (req == null) {
+            GameMessage expMsg = new GameMessage("CHALLENGE_EXPIRED");
+            expMsg.setMessage("Lời thách đấu đã hết hạn hoặc bị hủy!");
+            roomManager.sendToUser(targetId, expMsg);
+            return;
+        }
+
+        roomManager.removeChallenge(challengeId);
+
+        if (!msg.isAccepted()) {
+            GameMessage decMsg = new GameMessage("CHALLENGE_DECLINED");
+            decMsg.setMessage("Đối thủ đã từ chối lời mời thách đấu!");
+            roomManager.sendToUser(req.getChallengerId(), decMsg);
+        } else {
+            // Chấp nhận -> Tạo phòng mới và đưa cả 2 vào bàn cờ
+            String roomCode = "MATCH_" + (System.currentTimeMillis() % 1000000);
+            Room room = new Room();
+            room.setRoomCode(roomCode);
+            room.setRoomName("Thách đấu: " + req.getChallengerName() + " vs " + req.getTargetName());
+            room.setHostId(req.getChallengerId());
+            room.setGuestId(req.getTargetId());
+            room.setRoomType("RANKED");
+            room.setStatus("WAITING");
+
+            roomDAO.createRoom(room);
+            roomManager.addRoom(room);
+
+            GameMessage startMsg = new GameMessage("CHALLENGE_START");
+            startMsg.setRoomCode(roomCode);
+            startMsg.setMessage("Thách đấu được chấp nhận! Đang chuẩn bị vào bàn cờ...");
+            roomManager.sendToUser(req.getChallengerId(), startMsg);
+            roomManager.sendToUser(req.getTargetId(), startMsg);
+        }
+    }
+
+    private void handleChallengeCancel(int userId, GameMessage msg) {
+        String challengeId = msg.getChallengeId();
+        RoomManager.ChallengeRequest req = roomManager.removeChallenge(challengeId);
+        if (req != null) {
+            int targetId = (req.getChallengerId() == userId) ? req.getTargetId() : req.getChallengerId();
+            GameMessage cancelMsg = new GameMessage("CHALLENGE_CANCELLED");
+            cancelMsg.setChallengeId(challengeId);
+            cancelMsg.setMessage("Lời mời thách đấu đã bị hủy.");
+            roomManager.sendToUser(targetId, cancelMsg);
+        }
     }
 
     private void broadcastOnlineCount() {

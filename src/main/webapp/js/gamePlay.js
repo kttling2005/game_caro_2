@@ -99,6 +99,14 @@ socket.onmessage = function (event) {
                 handleGameOver(data);
                 break;
 
+            case "DRAW_INVITATION":
+                handleDrawInvitation(data);
+                break;
+
+            case "DRAW_DECLINED":
+                handleDrawDeclined(data);
+                break;
+
             case "REMATCH_INVITATION":
                 handleRematchInvitation(data);
                 break;
@@ -269,11 +277,21 @@ function handleStartGame(data) {
         clearTimeout(gameOverModalTimeout);
         gameOverModalTimeout = null;
     }
+    if (drawInviteModal) drawInviteModal.style.display = "none";
+    isDrawPending = false;
 
     // Ẩn tất cả popup
     if (waitingOverlay) waitingOverlay.style.display = "none";
     if (resultModal) resultModal.style.display = "none";
     if (rematchInviteModal) rematchInviteModal.style.display = "none";
+    if (drawInviteModal) drawInviteModal.style.display = "none";
+    isDrawPending = false;
+    const btnDrawReset = document.getElementById("btnDraw");
+    if (btnDrawReset) {
+        btnDrawReset.textContent = "🤝 Xin hòa";
+        btnDrawReset.disabled = false;
+        btnDrawReset.style.opacity = "1";
+    }
     if (rematchBtn) {
         rematchBtn.style.display = "inline-block";
         rematchBtn.textContent = "🔄 Tái Đấu Ngay";
@@ -377,6 +395,8 @@ function handleMoveUpdate(data) {
 function handleGameOver(data) {
     gameOver = true;
     clearInterval(timer);
+    if (drawInviteModal) drawInviteModal.style.display = "none";
+    isDrawPending = false;
     if (window.CaroAudio) {
         CaroAudio.stopBgm();
     }
@@ -513,6 +533,96 @@ function handleRematchDeclined(data) {
         rematchStatusMsg.style.display = "block";
     }
     if (rematchBtn) rematchBtn.style.display = "inline-block";
+}
+
+// ==========================================
+// 3.5. XIN HÒA (DRAW HANDSHAKE NEGOTIATION) & ĐẦU HÀNG
+// ==========================================
+
+const drawInviteModal = document.getElementById("drawInviteModal");
+const drawInviteText = document.getElementById("drawInviteText");
+let isDrawPending = false;
+
+function offerDraw() {
+    if (!isGameStarted || gameOver) {
+        alert("Trận đấu chưa bắt đầu hoặc đã kết thúc!");
+        return;
+    }
+
+    if (isDrawPending) {
+        alert("Bạn đã gửi đề nghị hòa! Vui lòng đợi đối thủ phản hồi.");
+        return;
+    }
+
+    if (confirm("🤝 Bạn có muốn gửi lời đề nghị HÒA CỜ tới đối thủ không?\n(Nếu đối thủ chấp thuận, ván cờ kết thúc hòa và mỗi bên được cộng +5 điểm)")) {
+        isDrawPending = true;
+        socket.send(JSON.stringify({
+            action: "DRAW_REQUEST",
+            roomCode: roomCode
+        }));
+
+        const btnDraw = document.getElementById("btnDraw");
+        if (btnDraw) {
+            btnDraw.textContent = "⏳ Đã xin hòa...";
+            btnDraw.disabled = true;
+            btnDraw.style.opacity = "0.7";
+        }
+        alert("Đã gửi lời đề nghị hòa cờ tới đối thủ. Vui lòng chờ phản hồi!");
+    }
+}
+
+function handleDrawInvitation(data) {
+    console.log("[DRAW] Received DRAW_INVITATION from " + data.senderName);
+    if (drawInviteText) {
+        drawInviteText.textContent = data.message || "Đối thủ đề nghị kết thúc hòa ván cờ (mỗi bên +5 điểm). Bạn có đồng ý không?";
+    }
+    if (drawInviteModal) {
+        drawInviteModal.style.display = "flex";
+    }
+}
+
+function acceptDraw() {
+    console.log("[DRAW] Accepting draw for room: " + roomCode);
+    socket.send(JSON.stringify({
+        action: "DRAW_RESPONSE",
+        roomCode: roomCode,
+        accepted: true
+    }));
+    if (drawInviteModal) drawInviteModal.style.display = "none";
+}
+
+function declineDraw() {
+    console.log("[DRAW] Declining draw for room: " + roomCode);
+    socket.send(JSON.stringify({
+        action: "DRAW_RESPONSE",
+        roomCode: roomCode,
+        accepted: false
+    }));
+    if (drawInviteModal) drawInviteModal.style.display = "none";
+}
+
+function handleDrawDeclined(data) {
+    isDrawPending = false;
+    const btnDraw = document.getElementById("btnDraw");
+    if (btnDraw) {
+        btnDraw.textContent = "🤝 Xin hòa";
+        btnDraw.disabled = false;
+        btnDraw.style.opacity = "1";
+    }
+    alert(data.message || "Đối thủ đã từ chối đề nghị hòa ván cờ. Trận đấu tiếp tục!");
+}
+
+function surrenderGame() {
+    if (!isGameStarted || gameOver) {
+        alert("Trận đấu chưa bắt đầu hoặc đã kết thúc!");
+        return;
+    }
+    if (confirm("🏳️ Bạn có chắc chắn muốn ĐẦU HÀNG ván cờ này?\n(Bạn sẽ bị xử thua và trừ 15 điểm Rank)")) {
+        socket.send(JSON.stringify({
+            action: "SURRENDER",
+            roomCode: roomCode
+        }));
+    }
 }
 
 function leaveRoom() {

@@ -29,19 +29,50 @@ public class GameMenuServlet extends HttpServlet {
         User currentUser = (session != null) ? (User) session.getAttribute("currentUser") : null;
         request.setAttribute("currentUser", currentUser);
 
-        // Lấy số lượng người online
-        int onlineCount = RoomManager.getInstance().getOnlineCount();
+        // Lấy số lượng người online đồng bộ giữa CSDL và WebSocket
+        int dbOnlineCount = userDAO.getOnlineCount();
+        int wsOnlineCount = RoomManager.getInstance().getOnlineCount();
+        int onlineCount = Math.max(dbOnlineCount, wsOnlineCount);
         if (onlineCount <= 0) {
-            onlineCount = userDAO.getOnlineCount();
-        }
-        if (onlineCount <= 0) {
-            onlineCount = 1; // Bản thân người chơi
+            onlineCount = 1; // Bản thân người chơi đang truy cập
         }
         request.setAttribute("onlineCount", onlineCount);
 
-        // Lấy danh sách top người chơi để hiển thị
-        List<User> topPlayers = userDAO.getTopRankings(6);
-        request.setAttribute("topPlayers", topPlayers);
+        // Lấy danh sách người chơi hiển thị thông minh:
+        // Ưu tiên 1: Người chơi đang ONLINE (đặt lên đầu)
+        // Ưu tiên 2: Nếu chưa đủ 6 người, bổ sung thêm Top cao thủ CSDL để danh sách luôn đầy đặn
+        int currentUserId = (currentUser != null) ? currentUser.getId() : -1;
+        java.util.List<User> activePlayers = new java.util.ArrayList<>();
+        java.util.Set<Integer> addedIds = new java.util.HashSet<>();
+        if (currentUserId > 0) {
+            addedIds.add(currentUserId);
+        }
+
+        List<User> onlineList = userDAO.getOnlineUsers(currentUserId);
+        if (onlineList != null) {
+            for (User u : onlineList) {
+                if (addedIds.add(u.getId())) {
+                    activePlayers.add(u);
+                }
+                if (activePlayers.size() >= 6) break;
+            }
+        }
+
+        boolean hasOtherOnline = !activePlayers.isEmpty();
+        request.setAttribute("hasOtherOnline", hasOtherOnline);
+
+        if (activePlayers.size() < 6) {
+            List<User> topList = userDAO.getTopRankings(10);
+            if (topList != null) {
+                for (User u : topList) {
+                    if (addedIds.add(u.getId())) {
+                        activePlayers.add(u);
+                    }
+                    if (activePlayers.size() >= 6) break;
+                }
+            }
+        }
+        request.setAttribute("topPlayers", activePlayers);
 
         // Lấy danh sách phòng đang chờ
         List<Room> waitingRooms = roomDAO.getWaitingRooms();

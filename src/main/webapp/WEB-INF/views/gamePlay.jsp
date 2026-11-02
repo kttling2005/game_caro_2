@@ -148,6 +148,59 @@
             color: #ffd338;
             margin-top: 10px;
         }
+
+        /* Nút Xin hòa & Đầu hàng trong Timer Panel */
+        .game-action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 14px;
+            width: 100%;
+        }
+        .btn-action-draw {
+            background: rgba(255, 193, 7, 0.18);
+            border: 2px solid #ffc107;
+            color: #ffe66d;
+            font-family: 'Irish Grover', cursive;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-action-draw:hover {
+            background: #ffc107;
+            color: #172916;
+            transform: scale(1.03);
+            box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+        }
+        .btn-action-surrender {
+            background: rgba(244, 67, 54, 0.18);
+            border: 2px solid #ff4d5e;
+            color: #ff8a80;
+            font-family: 'Irish Grover', cursive;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-action-surrender:hover {
+            background: #ff4d5e;
+            color: #ffffff;
+            transform: scale(1.03);
+            box-shadow: 0 0 12px rgba(255, 77, 94, 0.5);
+        }
     </style>
 </head>
 
@@ -205,6 +258,25 @@
             </button>
             <button class="btn-decline" onclick="declineRematch()">
                 ❌ Từ Chối
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP NHẬN LỜI XIN HÒA TỪ ĐỐI THỦ -->
+<div id="drawInviteModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <div style="font-size: 45px; margin-bottom: 10px;">🤝</div>
+        <div class="modal-title">ĐỀ NGHỊ HÒA CỜ!</div>
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 15px; color: #ffffff; margin-bottom: 20px;" id="drawInviteText">
+            Đối thủ đề nghị kết thúc hòa ván cờ (mỗi bên được +5 điểm). Bạn có đồng ý không?
+        </p>
+        <div class="modal-buttons">
+            <button class="btn-accept" onclick="acceptDraw()">
+                🤝 Đồng ý (+5đ)
+            </button>
+            <button class="btn-decline" onclick="declineDraw()">
+                ⚔️ Tiếp tục đấu
             </button>
         </div>
     </div>
@@ -294,6 +366,16 @@
 
             <div class="timer-status" id="timerStatus">
                 Sẵn sàng
+            </div>
+
+            <!-- NÚT THAO TÁC TRẬN ĐẤU (XIN HÒA & ĐẦU HÀNG) -->
+            <div class="game-action-buttons">
+                <button type="button" class="btn-action-draw" id="btnDraw" onclick="offerDraw()" title="Đề nghị kết thúc hòa ván đấu (Mỗi bên +5 điểm)">
+                    🤝 Xin hòa
+                </button>
+                <button type="button" class="btn-action-surrender" id="btnSurrender" onclick="surrenderGame()" title="Đầu hàng ván đấu (-15 điểm)">
+                    🏳️ Đầu hàng
+                </button>
             </div>
         </div>
 

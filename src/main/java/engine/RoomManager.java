@@ -29,6 +29,76 @@ public class RoomManager {
     // Hàng đợi tìm trận ngẫu nhiên (Matchmaking Queue)
     private final Queue<Integer> matchmakingQueue = new ConcurrentLinkedQueue<>();
 
+    // Lưu các yêu cầu thách đấu đang chờ phản hồi (key: challengeId)
+    private final Map<String, ChallengeRequest> activeChallenges = new ConcurrentHashMap<>();
+    private final Map<Integer, String> userActiveChallenge = new ConcurrentHashMap<>(); // userId -> challengeId
+
+    public static class ChallengeRequest {
+        private final String challengeId;
+        private final int challengerId;
+        private final String challengerName;
+        private final int challengerScore;
+        private final String challengerAvatar;
+        private final int targetId;
+        private final String targetName;
+        private final long createdAt;
+
+        public ChallengeRequest(String challengeId, int challengerId, String challengerName, int challengerScore, String challengerAvatar, int targetId, String targetName) {
+            this.challengeId = challengeId;
+            this.challengerId = challengerId;
+            this.challengerName = challengerName;
+            this.challengerScore = challengerScore;
+            this.challengerAvatar = challengerAvatar;
+            this.targetId = targetId;
+            this.targetName = targetName;
+            this.createdAt = System.currentTimeMillis();
+        }
+
+        public String getChallengeId() { return challengeId; }
+        public int getChallengerId() { return challengerId; }
+        public String getChallengerName() { return challengerName; }
+        public int getChallengerScore() { return challengerScore; }
+        public String getChallengerAvatar() { return challengerAvatar; }
+        public int getTargetId() { return targetId; }
+        public String getTargetName() { return targetName; }
+        public long getCreatedAt() { return createdAt; }
+        public boolean isExpired() { return (System.currentTimeMillis() - createdAt) > 35000; }
+    }
+
+    public void addChallenge(ChallengeRequest chal) {
+        if (chal != null) {
+            activeChallenges.put(chal.getChallengeId(), chal);
+            userActiveChallenge.put(chal.getChallengerId(), chal.getChallengeId());
+            userActiveChallenge.put(chal.getTargetId(), chal.getChallengeId());
+        }
+    }
+
+    public ChallengeRequest getChallenge(String challengeId) {
+        if (challengeId == null) return null;
+        ChallengeRequest req = activeChallenges.get(challengeId);
+        if (req != null && req.isExpired()) {
+            removeChallenge(challengeId);
+            return null;
+        }
+        return req;
+    }
+
+    public ChallengeRequest removeChallenge(String challengeId) {
+        if (challengeId == null) return null;
+        ChallengeRequest req = activeChallenges.remove(challengeId);
+        if (req != null) {
+            userActiveChallenge.remove(req.getChallengerId());
+            userActiveChallenge.remove(req.getTargetId());
+        }
+        return req;
+    }
+
+    public ChallengeRequest getChallengeForUser(int userId) {
+        String chalId = userActiveChallenge.get(userId);
+        if (chalId == null) return null;
+        return getChallenge(chalId);
+    }
+
     private RoomManager() {
     }
 

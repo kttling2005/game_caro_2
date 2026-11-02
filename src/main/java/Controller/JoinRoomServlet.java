@@ -7,7 +7,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Room;
+import model.User;
 
 import java.io.IOException;
 
@@ -56,6 +58,27 @@ public class JoinRoomServlet extends HttpServlet {
             request.setAttribute("error", "Phòng này đã đóng!");
             request.getRequestDispatcher("/WEB-INF/views/joinRoom.jsp").forward(request, response);
             return;
+        }
+
+        HttpSession session = request.getSession(false);
+        User currentUser = (session != null) ? (User) session.getAttribute("currentUser") : null;
+        int currentUserId = (currentUser != null) ? currentUser.getId() : 0;
+
+        boolean isCurrentPlayer = (currentUserId > 0) && (room.getHostId() == currentUserId || (room.getGuestId() != null && room.getGuestId() == currentUserId));
+
+        if (!isCurrentPlayer) {
+            if ("PLAYING".equals(room.getStatus())) {
+                request.setAttribute("error", "Phòng này đang trong trận đấu! Vui lòng chọn phòng khác.");
+                request.setAttribute("roomId", roomCode);
+                request.getRequestDispatcher("/WEB-INF/views/joinRoom.jsp").forward(request, response);
+                return;
+            }
+            if (!"WAITING".equals(room.getStatus()) || room.getGuestId() != null) {
+                request.setAttribute("error", "Phòng đã đủ 2 người chơi hoặc không còn nhận thêm đối thủ!");
+                request.setAttribute("roomId", roomCode);
+                request.getRequestDispatcher("/WEB-INF/views/joinRoom.jsp").forward(request, response);
+                return;
+            }
         }
 
         if (room.getPassword() != null && !room.getPassword().isEmpty()) {

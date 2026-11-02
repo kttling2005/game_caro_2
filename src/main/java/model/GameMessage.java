@@ -18,6 +18,12 @@ public class GameMessage {
     private boolean success;
     private boolean accepted;
 
+    // Challenge related fields
+    private int targetUserId;
+    private String challengeId;
+    private User challenger;
+    private User target;
+
     // Additional info for START_GAME
     private User player1;
     private User player2;
@@ -181,5 +187,37 @@ public class GameMessage {
 
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
+    }
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+
+    public String getChallengeId() {
+        return challengeId;
+    }
+
+    public void setChallengeId(String challengeId) {
+        this.challengeId = challengeId;
+    }
+
+    public User getChallenger() {
+        return challenger;
+    }
+
+    public void setChallenger(User challenger) {
+        this.challenger = challenger;
+    }
+
+    public User getTarget() {
+        return target;
+    }
+
+    public void setTarget(User target) {
+        this.target = target;
     }
 }

@@ -24,7 +24,7 @@ public class RankingServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User currentUser = (session != null) ? (User) session.getAttribute("currentUser") : null;
 
-        List<User> rankings = userDAO.getTopRankings(10);
+        List<User> rankings = userDAO.getTopRankings(50);
         request.setAttribute("rankings", rankings);
 
         if (currentUser != null) {
