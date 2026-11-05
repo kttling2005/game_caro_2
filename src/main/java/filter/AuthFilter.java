@@ -20,6 +20,16 @@ public class AuthFilter implements Filter {
 
         String path = req.getServletPath();
 
+        if (path.startsWith("/ws/game/")) {
+            HttpSession authenticated = req.getSession(false);
+            model.User user = authenticated == null ? null :
+                    (model.User) authenticated.getAttribute("currentUser");
+            if (user == null || !path.equals("/ws/game/" + user.getId())) {
+                res.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+        }
+
         // Bỏ qua các file tĩnh và trang công khai
         if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/assets/")
                 || path.startsWith("/ws/") || path.equals("/login") || path.equals("/register")

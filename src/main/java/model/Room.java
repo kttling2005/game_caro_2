@@ -26,6 +26,39 @@ public class Room {
     private boolean guestReadyRematch = false;
     private int movesCount;
     private long matchStartTime;
+    private String lastWinner;
+    private String lastReason;
+    private Integer lastWinnerId;
+    public void setLastResult(String winner, String reason, Integer winnerId) {
+        lastWinner = winner;
+        lastReason = reason;
+        lastWinnerId = winnerId;
+    }
+    public String getLastWinner() { return lastWinner; }
+    public String getLastReason() { return lastReason; }
+    public Integer getLastWinnerId() { return lastWinnerId; }
+    private long turnDeadline;
+    private long remainingTurnMillis = 60000;
+    private final java.util.Set<Integer> disconnectedUsers = new java.util.HashSet<>();
+
+    public long getTurnDeadline() { return turnDeadline; }
+    public void nextTurnDeadline() { turnDeadline = System.currentTimeMillis() + 60000; }
+    public long remainingTurnMillis() {
+        return disconnectedUsers.isEmpty()
+                ? Math.max(0, turnDeadline - System.currentTimeMillis()) : remainingTurnMillis;
+    }
+    public boolean isPaused() { return !disconnectedUsers.isEmpty(); }
+    public void disconnect(int userId) {
+        if (disconnectedUsers.isEmpty()) remainingTurnMillis = remainingTurnMillis();
+        disconnectedUsers.add(userId);
+    }
+    public void reconnect(int userId) {
+        disconnectedUsers.remove(userId);
+        if (disconnectedUsers.isEmpty()) turnDeadline = System.currentTimeMillis() + remainingTurnMillis;
+    }
+    public boolean isDisconnected(int userId) { return disconnectedUsers.contains(userId); }
+    public void clearDisconnects() { disconnectedUsers.clear(); }
+
 
     public Room() {
         this.status = "WAITING";
@@ -42,6 +75,8 @@ public class Room {
         this.hostReadyRematch = false;
         this.guestReadyRematch = false;
         this.matchStartTime = System.currentTimeMillis();
+        clearDisconnects();
+        nextTurnDeadline();
     }
 
     // Getters and Setters

@@ -40,11 +40,17 @@ public class GamePlayServlet extends HttpServlet {
         Room room = RoomManager.getInstance().getRoom(roomCode);
         if (room == null) {
             room = roomDAO.findByCode(roomCode);
-            if (room != null) {
+            if (room != null && !"CLOSED".equals(room.getStatus())) {
                 RoomManager.getInstance().addRoom(room);
             }
         }
 
+        if (room == null || "CLOSED".equals(room.getStatus()) ||
+                (!"WAITING".equals(room.getStatus()) && room.getHostId() != currentUser.getId() &&
+                 (room.getGuestId() == null || room.getGuestId() != currentUser.getId()))) {
+            response.sendRedirect(request.getContextPath() + "/game");
+            return;
+        }
         request.setAttribute("roomCode", roomCode);
         request.setAttribute("room", room);
         request.setAttribute("currentUser", currentUser);

@@ -1,6 +1,21 @@
 package model;
 
 public class GameMessage {
+    private String[][] board;
+    private int movesCount;
+    private long elapsedMillis;
+    private long remainingMillis;
+    private boolean paused;
+    private String roomStatus;
+    public void setSnapshot(Room room) {
+        board = new String[Room.BOARD_SIZE][];
+        for (int i = 0; i < board.length; i++) board[i] = room.getBoard()[i].clone();
+        movesCount = room.getMovesCount();
+        elapsedMillis = Math.max(0, System.currentTimeMillis() - room.getMatchStartTime());
+        remainingMillis = room.remainingTurnMillis();
+        paused = room.isPaused();
+        roomStatus = room.getStatus();
+    }
     private String action;
     private String roomCode;
     private int senderId;

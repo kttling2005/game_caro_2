@@ -5,6 +5,8 @@ let currentTurn = "X";
 let isGameStarted = false;
 let gameOver = false;
 let timeLeft = 60;
+let connectionPaused = false;
+let localTurnDeadline = 0;
 let timer = null;
 let movesCount = 0;
 let gameStartTime = null;
@@ -44,7 +46,7 @@ const inviteText = document.getElementById("inviteText");
 
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const wsUrl = protocol + "//" + window.location.host + contextPath + "/ws/game/" + currentUserId;
-const socket = new WebSocket(wsUrl);
+let socket = new WebSocket(wsUrl);
 
 socket.onopen = function () {
     console.log("WebSocket connected to:", wsUrl);
@@ -78,6 +80,9 @@ socket.onmessage = function (event) {
                 }
                 break;
 
+            case "STATE_SYNC":
+                handleStateSync(data);
+                break;
             case "START_GAME":
             case "REMATCH_START":
                 handleStartGame(data);
@@ -143,7 +148,19 @@ socket.onmessage = function (event) {
 };
 
 socket.onclose = function () {
-    console.log("WebSocket closed.");
+    clearInterval(timer);
+    connectionPaused = true;
+    if (turnText && !gameOver) turnText.textContent = "Đang kết nối lại...";
+    const closedSocket = this;
+    setTimeout(function () {
+        if (socket !== closedSocket) return;
+        const replacement = new WebSocket(wsUrl);
+        replacement.onopen = closedSocket.onopen;
+        replacement.onmessage = closedSocket.onmessage;
+        replacement.onclose = closedSocket.onclose;
+        replacement.onerror = closedSocket.onerror;
+        socket = replacement;
+    }, 1000);
 };
 
 socket.onerror = function (err) {
@@ -305,13 +322,14 @@ function handleStartGame(data) {
 
     isGameStarted = true;
     gameOver = false;
+    connectionPaused = false;
     if (window.CaroAudio) {
         CaroAudio.syncBgm();
     }
     mySymbol = data.yourSymbol;
     currentTurn = data.nextTurn || "X";
-    movesCount = 0;
-    gameStartTime = Date.now();
+    movesCount = data.movesCount || 0;
+    gameStartTime = Date.now() - (data.elapsedMillis || 0);
 
     // Cập nhật tên, ảnh avatar, điểm số và vai trò của 2 người chơi
     const p1Img = document.getElementById("player1AvatarImg");
@@ -363,6 +381,37 @@ function handleStartGame(data) {
     resetTimer();
 }
 
+function handleStateSync(data) {
+    handleStartGame(data);
+    if (Array.isArray(data.board)) {
+        data.board.forEach((row, r) => row.forEach((symbol, c) => {
+            if (!symbol) return;
+            const cell = document.querySelector('.cell[data-row="' + r + '"][data-col="' + c + '"]');
+            if (cell) {
+                cell.textContent = symbol;
+                cell.classList.add(symbol === "X" ? "x" : "o");
+            }
+        }));
+    }
+    movesCount = data.movesCount || 0;
+    gameOver = data.roomStatus !== "PLAYING";
+    connectionPaused = !!data.paused;
+    clearInterval(timer);
+    if (gameOver) {
+        if (resultModal) resultModal.style.display = "flex";
+        turnText.textContent = "Ván đã kết thúc. Bạn có thể yêu cầu tái đấu.";
+        return;
+    }
+    timeLeft = Math.ceil((data.remainingMillis || 0) / 1000);
+    if (timerElement) timerElement.textContent = timeLeft;
+    if (connectionPaused) {
+        turnText.textContent = "Mất kết nối. Chờ kết nối lại tối đa 15 giây...";
+    } else {
+        localTurnDeadline = Date.now() + (data.remainingMillis || 0);
+        startTimer();
+    }
+}
+
 function handleMoveUpdate(data) {
     const row = data.row;
     const col = data.col;
@@ -390,6 +439,9 @@ function handleMoveUpdate(data) {
 
     updateTurnUI();
     resetTimer();
+    if (typeof data.remainingMillis === "number") {
+        localTurnDeadline = Date.now() + data.remainingMillis;
+    }
 }
 
 function handleGameOver(data) {
@@ -544,7 +596,7 @@ const drawInviteText = document.getElementById("drawInviteText");
 let isDrawPending = false;
 
 function offerDraw() {
-    if (!isGameStarted || gameOver) {
+    if (!isGameStarted || gameOver || connectionPaused) {
         alert("Trận đấu chưa bắt đầu hoặc đã kết thúc!");
         return;
     }
@@ -613,7 +665,7 @@ function handleDrawDeclined(data) {
 }
 
 function surrenderGame() {
-    if (!isGameStarted || gameOver) {
+    if (!isGameStarted || gameOver || connectionPaused) {
         alert("Trận đấu chưa bắt đầu hoặc đã kết thúc!");
         return;
     }
@@ -740,7 +792,7 @@ function createBoard() {
 }
 
 function makeMove(cell) {
-    if (!isGameStarted || gameOver) {
+    if (!isGameStarted || gameOver || connectionPaused) {
         return;
     }
 
@@ -801,7 +853,8 @@ function updateTurnUI() {
 function startTimer() {
     clearInterval(timer);
     timer = setInterval(function () {
-        timeLeft--;
+        if (connectionPaused || gameOver) return;
+        timeLeft = Math.max(0, Math.ceil((localTurnDeadline - Date.now()) / 1000));
         if (timerElement) timerElement.textContent = timeLeft;
 
         const timerPanel = document.querySelector(".timer-panel");
@@ -824,6 +877,7 @@ function startTimer() {
 
 function resetTimer() {
     timeLeft = 60;
+    localTurnDeadline = Date.now() + 60000;
     if (timerElement) timerElement.textContent = timeLeft;
     const timerPanel = document.querySelector(".timer-panel");
     if (timerPanel) {

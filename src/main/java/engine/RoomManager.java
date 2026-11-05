@@ -129,15 +129,15 @@ public class RoomManager {
         }
     }
 
-    public void registerSession(int userId, Session session) {
+    public synchronized void registerSession(int userId, Session session) {
         userSessions.put(userId, session);
     }
 
-    public boolean removeSession(int userId, Session closingSession) {
+    public synchronized boolean removeSession(int userId, Session closingSession) {
         if (closingSession == null) return false;
         Session current = userSessions.get(userId);
         if (current != null && current.getId().equals(closingSession.getId())) {
-            userSessions.remove(userId);
+            userSessions.remove(userId, closingSession);
             matchmakingQueue.remove(userId);
             return true;
         }

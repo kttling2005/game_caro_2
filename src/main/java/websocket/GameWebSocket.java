@@ -26,6 +26,67 @@ public class GameWebSocket {
     private static final RoomDAO roomDAO = new RoomDAO();
     private static final MatchHistoryDAO matchHistoryDAO = new MatchHistoryDAO();
 
+    private static final java.util.concurrent.ScheduledExecutorService reconnectExecutor =
+            java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread thread = new Thread(r, "caro-reconnect");
+                thread.setDaemon(true);
+                return thread;
+            });
+    private static final java.util.Map<Integer, Object> disconnectTokens =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void shutdown() {
+        reconnectExecutor.shutdownNow();
+        disconnectTokens.clear();
+    }
+
+    private boolean member(Room room, int userId) {
+        return room.getHostId() == userId ||
+                (room.getGuestId() != null && room.getGuestId() == userId);
+    }
+
+    private void sendState(Room room, int userId) {
+        GameMessage state = new GameMessage("STATE_SYNC");
+        state.setRoomCode(room.getRoomCode());
+        state.setYourSymbol((userId == room.getHostId()) == room.isHostPlaysX() ? "X" : "O");
+        state.setNextTurn(room.getCurrentTurn());
+        state.setPlayer1(room.getHostUser());
+        state.setPlayer2(room.getGuestUser());
+        state.setSnapshot(room);
+        roomManager.sendToUser(userId, state);
+        if ("WAITING_REMATCH".equals(room.getStatus()) && room.getLastWinner() != null) {
+            GameMessage result = new GameMessage("GAME_OVER");
+            result.setWinner(room.getLastWinner());
+            result.setWinnerId(room.getLastWinnerId());
+            result.setMessage(room.getLastReason());
+            result.setRow(-1);
+            result.setCol(-1);
+            roomManager.sendToUser(userId, result);
+        }
+    }
+
+    private void broadcastState(Room room) {
+        sendState(room, room.getHostId());
+        if (room.getGuestId() != null) sendState(room, room.getGuestId());
+    }
+
+    private void waitForReconnect(int userId, Room room) {
+        Object token = new Object();
+        disconnectTokens.put(userId, token);
+        room.disconnect(userId);
+        broadcastState(room);
+        reconnectExecutor.schedule(() -> {
+            synchronized (room) {
+                if (disconnectTokens.get(userId) != token ||
+                        roomManager.getRoom(room.getRoomCode()) != room ||
+                        !room.isDisconnected(userId)) return;
+                disconnectTokens.remove(userId, token);
+                handleUserDeparture(userId, room.getRoomCode());
+                room.clearDisconnects();
+            }
+        }, 15, java.util.concurrent.TimeUnit.SECONDS);
+    }
+
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") int userId) {
         roomManager.registerSession(userId, session);
@@ -41,6 +102,24 @@ public class GameWebSocket {
             GameMessage message = gson.fromJson(messageJson, GameMessage.class);
             if (message == null || message.getAction() == null) return;
 
+            if (roomManager.getSession(userId) != session) return;
+            Room lockRoom = roomManager.getRoom(message.getRoomCode());
+            if (lockRoom != null && !"JOIN_ROOM".equals(message.getAction())) {
+                synchronized (lockRoom) {
+                    if (!member(lockRoom, userId)) return;
+                    if (lockRoom.isPaused() && !java.util.Set.of(
+                            "LEAVE_ROOM", "SURRENDER", "CHAT", "EMOJI").contains(message.getAction())) return;
+                    dispatch(message, userId);
+                }
+            } else {
+                dispatch(message, userId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void dispatch(GameMessage message, int userId) {
             String action = message.getAction();
 
             switch (action) {
@@ -95,9 +174,6 @@ public class GameWebSocket {
                 default:
                     System.out.println("Unknown action: " + action);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @OnClose
@@ -123,7 +199,18 @@ public class GameWebSocket {
 
         String roomCode = roomManager.getUserRoom(userId);
         if (roomCode != null) {
-            handleUserDeparture(userId, roomCode);
+            Room room = roomManager.getRoom(roomCode);
+            if (room != null) {
+                synchronized (room) {
+                    // A newer socket may have joined before this close callback acquired the lock.
+                    if (roomManager.getSession(userId) != null) return;
+                    if (member(room, userId) && "PLAYING".equals(room.getStatus())) {
+                        waitForReconnect(userId, room);
+                        return;
+                    }
+                    handleUserDeparture(userId, roomCode);
+                }
+            }
         }
 
         broadcastOnlineCount();
@@ -135,6 +222,9 @@ public class GameWebSocket {
         if (room == null) return;
 
         synchronized (room) {
+            if (!member(room, userId)) return;
+            disconnectTokens.remove(userId);
+            room.reconnect(userId);
             boolean isHost = (userId == room.getHostId());
             boolean isGuest = (room.getGuestId() != null && userId == room.getGuestId());
             boolean isRanked = "RANKED".equals(room.getRoomType()) || roomCode.startsWith("QUICK_");
@@ -243,7 +333,7 @@ public class GameWebSocket {
 
         if (room == null) {
             room = roomDAO.findByCode(roomCode);
-            if (room != null) {
+            if (room != null && !"CLOSED".equals(room.getStatus())) {
                 roomManager.addRoom(room);
             }
         }
@@ -255,10 +345,17 @@ public class GameWebSocket {
             return;
         }
 
-        roomManager.setUserRoom(userId, roomCode);
         User currentUser = userDAO.findById(userId);
 
         synchronized (room) {
+            if ("CLOSED".equals(room.getStatus()) ||
+                    (("PLAYING".equals(room.getStatus()) || "WAITING_REMATCH".equals(room.getStatus()))
+                            && !member(room, userId))) {
+                GameMessage error = new GameMessage("ERROR");
+                error.setMessage("Phòng đã kết thúc hoặc bạn không thuộc phòng.");
+                roomManager.sendToUser(userId, error);
+                return;
+            }
             boolean isHost = (room.getHostId() == userId);
             boolean isAssignedGuest = (room.getGuestId() != null && room.getGuestId() == userId);
             boolean isNewGuest = (room.getGuestId() == null && !isHost);
@@ -273,6 +370,15 @@ public class GameWebSocket {
                 GameMessage error = new GameMessage("ERROR");
                 error.setMessage("Phòng đã đủ 2 người chơi!");
                 roomManager.sendToUser(userId, error);
+                return;
+            }
+
+            roomManager.setUserRoom(userId, roomCode);
+            disconnectTokens.remove(userId);
+            if (room.isDisconnected(userId)) room.reconnect(userId);
+            if ("PLAYING".equals(room.getStatus()) || "WAITING_REMATCH".equals(room.getStatus())) {
+                userDAO.updateStatus(userId, "PLAYING".equals(room.getStatus()) ? "PLAYING" : "IN_ROOM");
+                broadcastState(room);
                 return;
             }
 
@@ -386,12 +492,14 @@ public class GameWebSocket {
         // 6. Chưa kết thúc -> Đổi lượt
         String nextTurn = "X".equals(symbol) ? "O" : "X";
         room.setCurrentTurn(nextTurn);
+        room.nextTurnDeadline();
 
         GameMessage moveUpdate = new GameMessage("MOVE_UPDATE");
         moveUpdate.setRow(row);
         moveUpdate.setCol(col);
         moveUpdate.setSymbol(symbol);
         moveUpdate.setNextTurn(nextTurn);
+        moveUpdate.setSnapshot(room);
         roomManager.broadcastToRoom(roomCode, moveUpdate);
     }
 
@@ -476,8 +584,10 @@ public class GameWebSocket {
         Room room = roomManager.getRoom(msg.getRoomCode());
         if (room == null || !"PLAYING".equals(room.getStatus())) return;
 
+        if (room.isPaused() || room.remainingTurnMillis() > 0) return;
         boolean isHost = (userId == room.getHostId());
         String mySymbol = (isHost == room.isHostPlaysX()) ? "X" : "O";
+        if (!mySymbol.equals(room.getCurrentTurn())) return;
         String winningSymbol = "X".equals(mySymbol) ? "O" : "X";
         finishGame(room, winningSymbol, "TIMEOUT", -1, -1);
     }
@@ -527,6 +637,7 @@ public class GameWebSocket {
         }
 
         synchronized (room) {
+            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused()) return;
             boolean isHost = (userId == room.getHostId());
             if (isHost) {
                 room.setHostReadyRematch(true);
@@ -565,6 +676,7 @@ public class GameWebSocket {
         if (room == null) return;
 
         synchronized (room) {
+            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused()) return;
             int opponentId = (userId == room.getHostId()) ? 
                     (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
 
@@ -639,6 +751,10 @@ public class GameWebSocket {
     }
 
     private void finishGame(Room room, String winnerSymbol, String reason, int lastRow, int lastCol) {
+        if (!"PLAYING".equals(room.getStatus())) return;
+        disconnectTokens.remove(room.getHostId());
+        if (room.getGuestId() != null) disconnectTokens.remove(room.getGuestId());
+        room.clearDisconnects();
         // Giữ phòng ở trạng thái WAITING_REMATCH để hỗ trợ chơi tiếp
         room.setStatus("WAITING_REMATCH");
         room.setHostReadyRematch(false);
@@ -686,6 +802,8 @@ public class GameWebSocket {
             duration
         );
         matchHistoryDAO.saveMatch(match);
+
+        room.setLastResult(winnerSymbol, reason, winnerId);
 
         // Broadcast GAME_OVER
         GameMessage gameOverMsg = new GameMessage("GAME_OVER");

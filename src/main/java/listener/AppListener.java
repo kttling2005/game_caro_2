@@ -22,6 +22,7 @@ public class AppListener implements ServletContextListener, HttpSessionListener 
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        websocket.GameWebSocket.shutdown();
         System.out.println("[AppListener] Application shutting down.");
     }
 
