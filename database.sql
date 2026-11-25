@@ -68,6 +68,8 @@ CREATE TABLE `match_history` (
   `winner_id` INT(11) DEFAULT NULL,
   `total_moves` INT(11) DEFAULT 0,
   `duration_seconds` INT(11) DEFAULT 0,
+  `player1_score_change` INT(11) DEFAULT 0,
+  `player2_score_change` INT(11) DEFAULT 0,
   `played_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   KEY `fk_history_room` (`room_id`),

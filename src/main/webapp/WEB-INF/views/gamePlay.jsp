@@ -269,11 +269,11 @@
         <div style="font-size: 45px; margin-bottom: 10px;">🤝</div>
         <div class="modal-title">ĐỀ NGHỊ HÒA CỜ!</div>
         <p style="font-family: 'Montserrat', sans-serif; font-size: 15px; color: #ffffff; margin-bottom: 20px;" id="drawInviteText">
-            Đối thủ đề nghị kết thúc hòa ván cờ (mỗi bên được +5 điểm). Bạn có đồng ý không?
+            Đối thủ đề nghị kết thúc hòa ván cờ (bên điểm cao hơn -1 điểm, bên điểm thấp hơn +1 điểm). Bạn có đồng ý không?
         </p>
         <div class="modal-buttons">
             <button class="btn-accept" onclick="acceptDraw()">
-                🤝 Đồng ý (+5đ)
+                🤝 Đồng ý hòa
             </button>
             <button class="btn-decline" onclick="declineDraw()">
                 ⚔️ Tiếp tục đấu
@@ -370,7 +370,7 @@
 
             <!-- NÚT THAO TÁC TRẬN ĐẤU (XIN HÒA & ĐẦU HÀNG) -->
             <div class="game-action-buttons">
-                <button type="button" class="btn-action-draw" id="btnDraw" onclick="offerDraw()" title="Đề nghị kết thúc hòa ván đấu (Mỗi bên +5 điểm)">
+                <button type="button" class="btn-action-draw" id="btnDraw" onclick="offerDraw()" title="Đề nghị kết thúc hòa ván đấu (Điểm cao -1, Điểm thấp +1)">
                     🤝 Xin hòa
                 </button>
                 <button type="button" class="btn-action-surrender" id="btnSurrender" onclick="surrenderGame()" title="Đầu hàng ván đấu (-15 điểm)">

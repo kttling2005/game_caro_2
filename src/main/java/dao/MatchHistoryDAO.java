@@ -9,8 +9,8 @@ import java.util.List;
 public class MatchHistoryDAO {
 
     public boolean saveMatch(MatchHistory match) {
-        String sql = "INSERT INTO match_history (room_id, player1_id, player2_id, winner_id, total_moves, duration_seconds) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO match_history (room_id, player1_id, player2_id, winner_id, total_moves, duration_seconds, player1_score_change, player2_score_change) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (match.getRoomId() != null) {
@@ -27,6 +27,8 @@ public class MatchHistoryDAO {
             }
             ps.setInt(5, match.getTotalMoves());
             ps.setInt(6, match.getDurationSeconds());
+            ps.setInt(7, match.getPlayer1ScoreChange());
+            ps.setInt(8, match.getPlayer2ScoreChange());
 
             int affected = ps.executeUpdate();
             if (affected > 0) {
@@ -127,6 +129,8 @@ public class MatchHistoryDAO {
         m.setWinnerId(rs.wasNull() ? null : winnerId);
         m.setTotalMoves(rs.getInt("total_moves"));
         m.setDurationSeconds(rs.getInt("duration_seconds"));
+        m.setPlayer1ScoreChange(rs.getInt("player1_score_change"));
+        m.setPlayer2ScoreChange(rs.getInt("player2_score_change"));
         m.setPlayedAt(rs.getTimestamp("played_at"));
         return m;
     }

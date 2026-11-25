@@ -26,7 +26,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-@WebServlet({"/option", "/profile"})
+@WebServlet({"/option", "/profile", "/history"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,      // 1MB
         maxFileSize = 3 * 1024 * 1024,       // 3MB
@@ -64,8 +64,11 @@ public class OptionServlet extends HttpServlet {
         List<MatchHistory> matchHistoryList = matchHistoryDAO.getRecentMatchesByUserId(currentUser.getId(), 30);
         request.setAttribute("matchHistoryList", matchHistoryList);
 
-        // Tab kích hoạt mặc định (nếu có tham số ?tab=...)
+        // Tab kích hoạt mặc định (nếu có tham số ?tab=... hoặc vào thẳng URL /history)
         String tabParam = request.getParameter("tab");
+        if ("/history".equals(request.getServletPath())) {
+            tabParam = "history";
+        }
         if (tabParam != null && !tabParam.trim().isEmpty()) {
             request.setAttribute("activeTab", tabParam.trim());
         }

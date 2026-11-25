@@ -10,6 +10,8 @@ public class MatchHistory {
     private Integer winnerId;
     private int totalMoves;
     private int durationSeconds;
+    private int player1ScoreChange;
+    private int player2ScoreChange;
     private Timestamp playedAt;
 
     private User player1;
@@ -26,6 +28,17 @@ public class MatchHistory {
         this.winnerId = winnerId;
         this.totalMoves = totalMoves;
         this.durationSeconds = durationSeconds;
+    }
+
+    public MatchHistory(Integer roomId, int player1Id, int player2Id, Integer winnerId, int totalMoves, int durationSeconds, int player1ScoreChange, int player2ScoreChange) {
+        this.roomId = roomId;
+        this.player1Id = player1Id;
+        this.player2Id = player2Id;
+        this.winnerId = winnerId;
+        this.totalMoves = totalMoves;
+        this.durationSeconds = durationSeconds;
+        this.player1ScoreChange = player1ScoreChange;
+        this.player2ScoreChange = player2ScoreChange;
     }
 
     // Getters and Setters
@@ -161,13 +174,34 @@ public class MatchHistory {
         return player1;
     }
 
+    public int getPlayer1ScoreChange() {
+        return player1ScoreChange;
+    }
+
+    public void setPlayer1ScoreChange(int player1ScoreChange) {
+        this.player1ScoreChange = player1ScoreChange;
+    }
+
+    public int getPlayer2ScoreChange() {
+        return player2ScoreChange;
+    }
+
+    public void setPlayer2ScoreChange(int player2ScoreChange) {
+        this.player2ScoreChange = player2ScoreChange;
+    }
+
     public int getScoreChangeForUser(int currentUserId) {
-        if (winnerId == null || winnerId == 0) {
-            return 5;
+        if (player1Id == currentUserId) {
+            if (player1ScoreChange != 0) return player1ScoreChange;
+        } else if (player2Id == currentUserId) {
+            if (player2ScoreChange != 0) return player2ScoreChange;
         }
-        if (winnerId == currentUserId) {
-            return 25;
+        // Fallback for older matches without recorded score change
+        if (winnerId != null && winnerId != 0) {
+            return (winnerId == currentUserId) ? 25 : -15;
         }
-        return -15;
+        if (player1Id == currentUserId) return player1ScoreChange;
+        if (player2Id == currentUserId) return player2ScoreChange;
+        return 0;
     }
 }

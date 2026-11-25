@@ -14,7 +14,7 @@
     String statusText = isWin ? "VICTORY!" : (isDraw ? "HÒA CỜ!" : "DEFEAT!");
     String trophyIcon = isWin ? "🏆" : (isDraw ? "🤝" : "💔");
     String winnerText = isWin ? "Bạn đã giành chiến thắng xuất sắc!" : (isDraw ? "Hai kỳ thủ bất phân thắng bại!" : "Rất tiếc, bạn đã nhận thất bại!");
-    String ratingText = isWin ? "+25" : (isDraw ? "+5" : "-15");
+    String ratingText = isWin ? "+25" : (isDraw ? "+1 / -1" : "-15");
     String ratingClass = (isWin || isDraw) ? "rating-up" : "rating-down";
 %>
 

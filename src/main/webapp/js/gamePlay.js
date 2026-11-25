@@ -424,7 +424,7 @@ function handleMoveUpdate(data) {
     if (cell) {
         cell.textContent = symbol;
         cell.classList.add(symbol === "X" ? "x" : "o");
-        
+
         // Kiểm tra thiết lập highlight trong localStorage (mặc định là true)
         const isHighlightEnabled = localStorage.getItem('caro_highlight') !== 'false';
         if (isHighlightEnabled) {
@@ -485,8 +485,17 @@ function handleGameOver(data) {
         if (resTrophy) resTrophy.textContent = "🤝";
         if (resStatus) resStatus.textContent = "HÒA CỜ!";
         if (resScore) {
-            resScore.textContent = "+5 điểm Rank";
-            resScore.className = "result-score-change score-draw";
+            const sc = (typeof data.scoreChange === "number") ? data.scoreChange : 0;
+            if (sc > 0) {
+                resScore.textContent = "+" + sc + " điểm Rank";
+                resScore.className = "result-score-change score-win";
+            } else if (sc < 0) {
+                resScore.textContent = sc + " điểm Rank";
+                resScore.className = "result-score-change score-loss";
+            } else {
+                resScore.textContent = "+0 điểm Rank";
+                resScore.className = "result-score-change score-draw";
+            }
         }
     } else if (data.winner === mySymbol) {
         playGameSoundWin();
@@ -606,7 +615,7 @@ function offerDraw() {
         return;
     }
 
-    if (confirm("🤝 Bạn có muốn gửi lời đề nghị HÒA CỜ tới đối thủ không?\n(Nếu đối thủ chấp thuận, ván cờ kết thúc hòa và mỗi bên được cộng +5 điểm)")) {
+    if (confirm("🤝 Bạn có muốn gửi lời đề nghị HÒA CỜ tới đối thủ không?\n(Nếu chấp thuận: bên điểm cao hơn -1 điểm, bên điểm thấp hơn +1 điểm)")) {
         isDrawPending = true;
         socket.send(JSON.stringify({
             action: "DRAW_REQUEST",
@@ -626,7 +635,7 @@ function offerDraw() {
 function handleDrawInvitation(data) {
     console.log("[DRAW] Received DRAW_INVITATION from " + data.senderName);
     if (drawInviteText) {
-        drawInviteText.textContent = data.message || "Đối thủ đề nghị kết thúc hòa ván cờ (mỗi bên +5 điểm). Bạn có đồng ý không?";
+        drawInviteText.textContent = data.message || "Đối thủ đề nghị kết thúc hòa ván cờ (bên điểm cao hơn -1 điểm, bên điểm thấp hơn +1 điểm). Bạn có đồng ý không?";
     }
     if (drawInviteModal) {
         drawInviteModal.style.display = "flex";
@@ -731,7 +740,7 @@ function setupCoordinates() {
     const leftElem = document.getElementById("coordsLeft");
     const rightElem = document.getElementById("coordsRight");
 
-    const COLS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+    const COLS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
     const ROWS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
     if (topElem && topElem.children.length === 0) {

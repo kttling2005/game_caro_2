@@ -26,14 +26,13 @@ public class GameWebSocket {
     private static final RoomDAO roomDAO = new RoomDAO();
     private static final MatchHistoryDAO matchHistoryDAO = new MatchHistoryDAO();
 
-    private static final java.util.concurrent.ScheduledExecutorService reconnectExecutor =
-            java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+    private static final java.util.concurrent.ScheduledExecutorService reconnectExecutor = java.util.concurrent.Executors
+            .newSingleThreadScheduledExecutor(r -> {
                 Thread thread = new Thread(r, "caro-reconnect");
                 thread.setDaemon(true);
                 return thread;
             });
-    private static final java.util.Map<Integer, Object> disconnectTokens =
-            new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<Integer, Object> disconnectTokens = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static void shutdown() {
         reconnectExecutor.shutdownNow();
@@ -67,7 +66,8 @@ public class GameWebSocket {
 
     private void broadcastState(Room room) {
         sendState(room, room.getHostId());
-        if (room.getGuestId() != null) sendState(room, room.getGuestId());
+        if (room.getGuestId() != null)
+            sendState(room, room.getGuestId());
     }
 
     private void waitForReconnect(int userId, Room room) {
@@ -79,7 +79,8 @@ public class GameWebSocket {
             synchronized (room) {
                 if (disconnectTokens.get(userId) != token ||
                         roomManager.getRoom(room.getRoomCode()) != room ||
-                        !room.isDisconnected(userId)) return;
+                        !room.isDisconnected(userId))
+                    return;
                 disconnectTokens.remove(userId, token);
                 handleUserDeparture(userId, room.getRoomCode());
                 room.clearDisconnects();
@@ -100,15 +101,19 @@ public class GameWebSocket {
     public void onMessage(String messageJson, Session session, @PathParam("userId") int userId) {
         try {
             GameMessage message = gson.fromJson(messageJson, GameMessage.class);
-            if (message == null || message.getAction() == null) return;
+            if (message == null || message.getAction() == null)
+                return;
 
-            if (roomManager.getSession(userId) != session) return;
+            if (roomManager.getSession(userId) != session)
+                return;
             Room lockRoom = roomManager.getRoom(message.getRoomCode());
             if (lockRoom != null && !"JOIN_ROOM".equals(message.getAction())) {
                 synchronized (lockRoom) {
-                    if (!member(lockRoom, userId)) return;
+                    if (!member(lockRoom, userId))
+                        return;
                     if (lockRoom.isPaused() && !java.util.Set.of(
-                            "LEAVE_ROOM", "SURRENDER", "CHAT", "EMOJI").contains(message.getAction())) return;
+                            "LEAVE_ROOM", "SURRENDER", "CHAT", "EMOJI").contains(message.getAction()))
+                        return;
                     dispatch(message, userId);
                 }
             } else {
@@ -120,66 +125,67 @@ public class GameWebSocket {
     }
 
     private void dispatch(GameMessage message, int userId) {
-            String action = message.getAction();
+        String action = message.getAction();
 
-            switch (action) {
-                case "JOIN_ROOM":
-                    handleJoinRoom(userId, message);
-                    break;
-                case "MOVE":
-                    handleMove(userId, message);
-                    break;
-                case "CHAT":
-                    handleChat(userId, message);
-                    break;
-                case "EMOJI":
-                    handleEmoji(userId, message);
-                    break;
-                case "SURRENDER":
-                    handleSurrender(userId, message);
-                    break;
-                case "DRAW_REQUEST":
-                    handleDrawRequest(userId, message);
-                    break;
-                case "DRAW_RESPONSE":
-                    handleDrawResponse(userId, message);
-                    break;
-                case "TIMEOUT":
-                    handleTimeout(userId, message);
-                    break;
-                case "FIND_MATCH":
-                    handleFindMatch(userId);
-                    break;
-                case "CANCEL_FIND_MATCH":
-                    roomManager.getMatchmakingQueue().remove(userId);
-                    break;
-                case "REMATCH_REQUEST":
-                    handleRematchRequest(userId, message);
-                    break;
-                case "REMATCH_RESPONSE":
-                    handleRematchResponse(userId, message);
-                    break;
-                case "LEAVE_ROOM":
-                    handleUserDeparture(userId, message.getRoomCode());
-                    break;
-                case "CHALLENGE_REQUEST":
-                    handleChallengeRequest(userId, message);
-                    break;
-                case "CHALLENGE_RESPONSE":
-                    handleChallengeResponse(userId, message);
-                    break;
-                case "CHALLENGE_CANCEL":
-                    handleChallengeCancel(userId, message);
-                    break;
-                default:
-                    System.out.println("Unknown action: " + action);
-            }
+        switch (action) {
+            case "JOIN_ROOM":
+                handleJoinRoom(userId, message);
+                break;
+            case "MOVE":
+                handleMove(userId, message);
+                break;
+            case "CHAT":
+                handleChat(userId, message);
+                break;
+            case "EMOJI":
+                handleEmoji(userId, message);
+                break;
+            case "SURRENDER":
+                handleSurrender(userId, message);
+                break;
+            case "DRAW_REQUEST":
+                handleDrawRequest(userId, message);
+                break;
+            case "DRAW_RESPONSE":
+                handleDrawResponse(userId, message);
+                break;
+            case "TIMEOUT":
+                handleTimeout(userId, message);
+                break;
+            case "FIND_MATCH":
+                handleFindMatch(userId);
+                break;
+            case "CANCEL_FIND_MATCH":
+                roomManager.getMatchmakingQueue().remove(userId);
+                break;
+            case "REMATCH_REQUEST":
+                handleRematchRequest(userId, message);
+                break;
+            case "REMATCH_RESPONSE":
+                handleRematchResponse(userId, message);
+                break;
+            case "LEAVE_ROOM":
+                handleUserDeparture(userId, message.getRoomCode());
+                break;
+            case "CHALLENGE_REQUEST":
+                handleChallengeRequest(userId, message);
+                break;
+            case "CHALLENGE_RESPONSE":
+                handleChallengeResponse(userId, message);
+                break;
+            case "CHALLENGE_CANCEL":
+                handleChallengeCancel(userId, message);
+                break;
+            default:
+                System.out.println("Unknown action: " + action);
+        }
     }
 
     @OnClose
     public void onClose(Session session, @PathParam("userId") int userId) {
         // Chỉ xử lý đóng nếu session đang đóng đúng là session active của user
-        // Tránh tình trạng session cũ từ trang tìm trận vừa đóng làm ảnh hưởng tới session mới ở trang chơi
+        // Tránh tình trạng session cũ từ trang tìm trận vừa đóng làm ảnh hưởng tới
+        // session mới ở trang chơi
         boolean isCurrent = roomManager.removeSession(userId, session);
         if (!isCurrent) {
             System.out.println("[WS] Ignored onClose for old/stale session of user " + userId);
@@ -191,7 +197,8 @@ public class GameWebSocket {
         RoomManager.ChallengeRequest pendingChal = roomManager.getChallengeForUser(userId);
         if (pendingChal != null) {
             roomManager.removeChallenge(pendingChal.getChallengeId());
-            int otherId = (pendingChal.getChallengerId() == userId) ? pendingChal.getTargetId() : pendingChal.getChallengerId();
+            int otherId = (pendingChal.getChallengerId() == userId) ? pendingChal.getTargetId()
+                    : pendingChal.getChallengerId();
             GameMessage msg = new GameMessage("CHALLENGE_CANCELLED");
             msg.setMessage("Đối thủ đã ngắt kết nối.");
             roomManager.sendToUser(otherId, msg);
@@ -203,7 +210,8 @@ public class GameWebSocket {
             if (room != null) {
                 synchronized (room) {
                     // A newer socket may have joined before this close callback acquired the lock.
-                    if (roomManager.getSession(userId) != null) return;
+                    if (roomManager.getSession(userId) != null)
+                        return;
                     if (member(room, userId) && "PLAYING".equals(room.getStatus())) {
                         waitForReconnect(userId, room);
                         return;
@@ -217,12 +225,15 @@ public class GameWebSocket {
     }
 
     private void handleUserDeparture(int userId, String roomCode) {
-        if (roomCode == null) return;
+        if (roomCode == null)
+            return;
         Room room = roomManager.getRoom(roomCode);
-        if (room == null) return;
+        if (room == null)
+            return;
 
         synchronized (room) {
-            if (!member(room, userId)) return;
+            if (!member(room, userId))
+                return;
             disconnectTokens.remove(userId);
             room.reconnect(userId);
             boolean isHost = (userId == room.getHostId());
@@ -234,10 +245,9 @@ public class GameWebSocket {
                 // ĐỐI VỚI TRẬN GHÉP NGẪU NHIÊN (QUICK MATCH / RANKED):
                 // 1 bên thoát -> Đóng phòng hoàn toàn! Không giữ phòng chờ đối thủ mới.
                 if (wasPlaying) {
-                    // Nếu đang chơi dở mà 1 bên thoát -> Xử thắng cho bên còn lại (+25 điểm), bên thoát (-15 điểm)
-                    String winSymbol = isHost ? 
-                            (room.isHostPlaysX() ? "O" : "X") : 
-                            (room.isHostPlaysX() ? "X" : "O");
+                    // Nếu đang chơi dở mà 1 bên thoát -> Xử thắng cho bên còn lại (+25 điểm), bên
+                    // thoát (-15 điểm)
+                    String winSymbol = isHost ? (room.isHostPlaysX() ? "O" : "X") : (room.isHostPlaysX() ? "X" : "O");
                     finishGame(room, winSymbol, isHost ? "HOST_LEFT" : "GUEST_LEFT", -1, -1);
                 }
 
@@ -245,13 +255,13 @@ public class GameWebSocket {
                 roomDAO.updateStatus(room.getId(), "CLOSED");
                 roomManager.removeRoom(roomCode);
 
-                int remainingUserId = isHost ? 
-                        (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+                int remainingUserId = isHost ? (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
 
                 if (remainingUserId > 0) {
                     GameMessage msg = new GameMessage("OPPONENT_LEFT");
                     if (wasPlaying) {
-                        msg.setMessage("Đối thủ đã thoát trận giữa chừng! Bạn được xử thắng (+25 điểm). Trận đấu kết thúc.");
+                        msg.setMessage(
+                                "Đối thủ đã thoát trận giữa chừng! Bạn được xử thắng (+25 điểm). Trận đấu kết thúc.");
                     } else {
                         msg.setMessage("Đối thủ đã hủy trận và rời phòng. Trận đấu đã kết thúc!");
                     }
@@ -282,7 +292,8 @@ public class GameWebSocket {
                     userDAO.updateStatus(room.getGuestId(), "ONLINE");
                     GameMessage msg = new GameMessage("HOST_LEFT_ROOM");
                     if (wasPlaying) {
-                        msg.setMessage("Chủ phòng đã thoát trận giữa chừng! Bạn được xử thắng (+25 điểm). Phòng đã đóng.");
+                        msg.setMessage(
+                                "Chủ phòng đã thoát trận giữa chừng! Bạn được xử thắng (+25 điểm). Phòng đã đóng.");
                     } else {
                         msg.setMessage("Chủ phòng đã rời đi. Phòng đã đóng!");
                     }
@@ -375,7 +386,8 @@ public class GameWebSocket {
 
             roomManager.setUserRoom(userId, roomCode);
             disconnectTokens.remove(userId);
-            if (room.isDisconnected(userId)) room.reconnect(userId);
+            if (room.isDisconnected(userId))
+                room.reconnect(userId);
             if ("PLAYING".equals(room.getStatus()) || "WAITING_REMATCH".equals(room.getStatus())) {
                 userDAO.updateStatus(userId, "PLAYING".equals(room.getStatus()) ? "PLAYING" : "IN_ROOM");
                 broadcastState(room);
@@ -431,8 +443,8 @@ public class GameWebSocket {
                 startGuest.setPlayer2(room.getGuestUser());
                 roomManager.sendToUser(room.getGuestId(), startGuest);
 
-                System.out.println("[GAME_START] Both players present in room " + roomCode 
-                        + ". Host: " + room.getHostId() + " (" + hostSymbol 
+                System.out.println("[GAME_START] Both players present in room " + roomCode
+                        + ". Host: " + room.getHostId() + " (" + hostSymbol
                         + "), Guest: " + room.getGuestId() + " (" + guestSymbol + ")");
             } else {
                 // Chỉ mới CÓ 1 NGƯỜI kết nối -> Người đó chờ đối thủ
@@ -441,7 +453,7 @@ public class GameWebSocket {
                 waitMsg.setMessage("Đang chờ đối thủ tham gia...");
                 roomManager.sendToUser(userId, waitMsg);
 
-                System.out.println("[ROOM_WAIT] User " + userId + " waiting for opponent in room " + roomCode 
+                System.out.println("[ROOM_WAIT] User " + userId + " waiting for opponent in room " + roomCode
                         + " (hostOnline=" + hostOnline + ", guestOnline=" + guestOnline + ")");
             }
         }
@@ -450,7 +462,8 @@ public class GameWebSocket {
     private void handleMove(int userId, GameMessage msg) {
         String roomCode = msg.getRoomCode();
         Room room = roomManager.getRoom(roomCode);
-        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+        if (room == null || !"PLAYING".equals(room.getStatus()))
+            return;
 
         int row = msg.getRow();
         int col = msg.getCol();
@@ -505,7 +518,8 @@ public class GameWebSocket {
 
     private void handleChat(int userId, GameMessage msg) {
         Room room = roomManager.getRoom(msg.getRoomCode());
-        if (room == null) return;
+        if (room == null)
+            return;
 
         User user = userDAO.findById(userId);
         GameMessage chatMsg = new GameMessage("CHAT");
@@ -518,7 +532,8 @@ public class GameWebSocket {
 
     private void handleEmoji(int userId, GameMessage msg) {
         Room room = roomManager.getRoom(msg.getRoomCode());
-        if (room == null) return;
+        if (room == null)
+            return;
 
         GameMessage emojiMsg = new GameMessage("EMOJI");
         emojiMsg.setContent(msg.getContent());
@@ -529,7 +544,8 @@ public class GameWebSocket {
 
     private void handleSurrender(int userId, GameMessage msg) {
         Room room = roomManager.getRoom(msg.getRoomCode());
-        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+        if (room == null || !"PLAYING".equals(room.getStatus()))
+            return;
 
         boolean isHost = (userId == room.getHostId());
         String mySymbol = (isHost == room.isHostPlaysX()) ? "X" : "O";
@@ -540,21 +556,25 @@ public class GameWebSocket {
     private void handleDrawRequest(int userId, GameMessage msg) {
         String code = (msg.getRoomCode() != null) ? msg.getRoomCode().trim() : null;
         Room room = roomManager.getRoom(code);
-        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+        if (room == null || !"PLAYING".equals(room.getStatus()))
+            return;
 
         synchronized (room) {
             boolean isHost = (userId == room.getHostId());
-            int opponentId = isHost ? 
-                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+            int opponentId = isHost ? (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
 
             if (opponentId > 0) {
                 User sender = userDAO.findById(userId);
                 GameMessage invite = new GameMessage("DRAW_INVITATION");
                 invite.setRoomCode(code);
                 invite.setSenderId(userId);
-                String name = (sender != null) ? (sender.getNickname() != null ? sender.getNickname() : sender.getUsername()) : "Đối thủ";
+                String name = (sender != null)
+                        ? (sender.getNickname() != null ? sender.getNickname() : sender.getUsername())
+                        : "Đối thủ";
                 invite.setSenderName(name);
-                invite.setMessage("Đối thủ [" + name + "] đề nghị kết thúc hòa ván cờ (mỗi bên +5 điểm). Bạn có đồng ý không?");
+                invite.setMessage(
+                        "Đối thủ [" + name
+                                + "] đề nghị kết thúc hòa ván cờ (bên điểm cao hơn -1 điểm, bên điểm thấp hơn +1 điểm). Bạn có đồng ý không?");
                 roomManager.sendToUser(opponentId, invite);
             }
         }
@@ -563,11 +583,12 @@ public class GameWebSocket {
     private void handleDrawResponse(int userId, GameMessage msg) {
         String code = (msg.getRoomCode() != null) ? msg.getRoomCode().trim() : null;
         Room room = roomManager.getRoom(code);
-        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+        if (room == null || !"PLAYING".equals(room.getStatus()))
+            return;
 
         synchronized (room) {
-            int opponentId = (userId == room.getHostId()) ? 
-                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+            int opponentId = (userId == room.getHostId()) ? (room.getGuestId() != null ? room.getGuestId() : 0)
+                    : room.getHostId();
 
             if (!msg.isAccepted()) {
                 GameMessage decline = new GameMessage("DRAW_DECLINED");
@@ -582,12 +603,15 @@ public class GameWebSocket {
 
     private void handleTimeout(int userId, GameMessage msg) {
         Room room = roomManager.getRoom(msg.getRoomCode());
-        if (room == null || !"PLAYING".equals(room.getStatus())) return;
+        if (room == null || !"PLAYING".equals(room.getStatus()))
+            return;
 
-        if (room.isPaused() || room.remainingTurnMillis() > 0) return;
+        if (room.isPaused() || room.remainingTurnMillis() > 0)
+            return;
         boolean isHost = (userId == room.getHostId());
         String mySymbol = (isHost == room.isHostPlaysX()) ? "X" : "O";
-        if (!mySymbol.equals(room.getCurrentTurn())) return;
+        if (!mySymbol.equals(room.getCurrentTurn()))
+            return;
         String winningSymbol = "X".equals(mySymbol) ? "O" : "X";
         finishGame(room, winningSymbol, "TIMEOUT", -1, -1);
     }
@@ -637,7 +661,8 @@ public class GameWebSocket {
         }
 
         synchronized (room) {
-            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused()) return;
+            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused())
+                return;
             boolean isHost = (userId == room.getHostId());
             if (isHost) {
                 room.setHostReadyRematch(true);
@@ -645,12 +670,11 @@ public class GameWebSocket {
                 room.setGuestReadyRematch(true);
             }
 
-            System.out.println("[REMATCH] User " + userId + " (isHost=" + isHost + ") requested rematch in room " 
-                    + code + ". Status: hostReady=" + room.isHostReadyRematch() 
+            System.out.println("[REMATCH] User " + userId + " (isHost=" + isHost + ") requested rematch in room "
+                    + code + ". Status: hostReady=" + room.isHostReadyRematch()
                     + ", guestReady=" + room.isGuestReadyRematch());
 
-            int opponentId = isHost ? 
-                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+            int opponentId = isHost ? (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
 
             // Nếu cả 2 người chơi đều đã bấm Tái đấu -> Bắt đầu ván mới ngay lập tức!
             if (room.isHostReadyRematch() && room.isGuestReadyRematch()) {
@@ -673,12 +697,14 @@ public class GameWebSocket {
     private void handleRematchResponse(int userId, GameMessage msg) {
         String code = (msg.getRoomCode() != null) ? msg.getRoomCode().trim() : null;
         Room room = roomManager.getRoom(code);
-        if (room == null) return;
+        if (room == null)
+            return;
 
         synchronized (room) {
-            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused()) return;
-            int opponentId = (userId == room.getHostId()) ? 
-                    (room.getGuestId() != null ? room.getGuestId() : 0) : room.getHostId();
+            if (!"WAITING_REMATCH".equals(room.getStatus()) || room.isPaused())
+                return;
+            int opponentId = (userId == room.getHostId()) ? (room.getGuestId() != null ? room.getGuestId() : 0)
+                    : room.getHostId();
 
             if (!msg.isAccepted()) {
                 room.setHostReadyRematch(false);
@@ -708,7 +734,8 @@ public class GameWebSocket {
         int guestId = room.getGuestId() != null ? room.getGuestId() : 0;
 
         userDAO.updateStatus(hostId, "PLAYING");
-        if (guestId > 0) userDAO.updateStatus(guestId, "PLAYING");
+        if (guestId > 0)
+            userDAO.updateStatus(guestId, "PLAYING");
 
         String hostSymbol = room.isHostPlaysX() ? "X" : "O";
         String guestSymbol = room.isHostPlaysX() ? "O" : "X";
@@ -725,8 +752,8 @@ public class GameWebSocket {
             room.setGuestUser(guestUser);
         }
 
-        System.out.println("[REMATCH_START] Room " + room.getRoomCode() 
-                + " -> Host (" + hostId + ") is " + hostSymbol 
+        System.out.println("[REMATCH_START] Room " + room.getRoomCode()
+                + " -> Host (" + hostId + ") is " + hostSymbol
                 + ", Guest (" + guestId + ") is " + guestSymbol);
 
         // Bắt đầu ván mới cho Host
@@ -751,9 +778,11 @@ public class GameWebSocket {
     }
 
     private void finishGame(Room room, String winnerSymbol, String reason, int lastRow, int lastCol) {
-        if (!"PLAYING".equals(room.getStatus())) return;
+        if (!"PLAYING".equals(room.getStatus()))
+            return;
         disconnectTokens.remove(room.getHostId());
-        if (room.getGuestId() != null) disconnectTokens.remove(room.getGuestId());
+        if (room.getGuestId() != null)
+            disconnectTokens.remove(room.getGuestId());
         room.clearDisconnects();
         // Giữ phòng ở trạng thái WAITING_REMATCH để hỗ trợ chơi tiếp
         room.setStatus("WAITING_REMATCH");
@@ -776,7 +805,11 @@ public class GameWebSocket {
         }
 
         int duration = (int) ((System.currentTimeMillis() - room.getMatchStartTime()) / 1000);
-        if (duration <= 0) duration = 1;
+        if (duration <= 0)
+            duration = 1;
+
+        int hostScoreChange = 0;
+        int guestScoreChange = 0;
 
         // Cập nhật CSDL
         if (winnerId != null && loserId != null) {
@@ -784,42 +817,85 @@ public class GameWebSocket {
             userDAO.updateGameResult(loserId, false, false, -15);
         } else {
             // DRAW
-            userDAO.updateGameResult(room.getHostId(), false, true, 5);
-            if (room.getGuestId() != null) {
-                userDAO.updateGameResult(room.getGuestId(), false, true, 5);
+            if ("MUTUAL_DRAW".equals(reason)) {
+                // Người có điểm cao hơn bị trừ 1 điểm, người có điểm thấp hơn được cộng 1 điểm
+                User hostUser = userDAO.findById(hostId);
+                User guestUser = (guestId > 0) ? userDAO.findById(guestId) : null;
+                int hostScore = (hostUser != null) ? hostUser.getScore() : 1000;
+                int guestScore = (guestUser != null) ? guestUser.getScore() : 1000;
+
+                if (hostScore > guestScore) {
+                    hostScoreChange = -1;
+                    guestScoreChange = 1;
+                } else if (guestScore > hostScore) {
+                    hostScoreChange = 1;
+                    guestScoreChange = -1;
+                } else {
+                    hostScoreChange = 0;
+                    guestScoreChange = 0;
+                }
+
+                userDAO.updateGameResult(hostId, false, true, hostScoreChange);
+                if (guestId > 0) {
+                    userDAO.updateGameResult(guestId, false, true, guestScoreChange);
+                }
+            } else {
+                hostScoreChange = 5;
+                guestScoreChange = 5;
+                userDAO.updateGameResult(room.getHostId(), false, true, 5);
+                if (room.getGuestId() != null) {
+                    userDAO.updateGameResult(room.getGuestId(), false, true, 5);
+                }
             }
         }
 
         userDAO.updateStatus(hostId, "IN_ROOM");
-        if (guestId > 0) userDAO.updateStatus(guestId, "IN_ROOM");
+        if (guestId > 0)
+            userDAO.updateStatus(guestId, "IN_ROOM");
+
+        int hostDelta = (winnerId != null) ? (winnerId == hostId ? 25 : -15) : hostScoreChange;
+        int guestDelta = (guestId > 0) ? ((winnerId != null) ? (winnerId == guestId ? 25 : -15) : guestScoreChange) : 0;
 
         MatchHistory match = new MatchHistory(
-            room.getId(),
-            room.getHostId(),
-            room.getGuestId() != null ? room.getGuestId() : 0,
-            winnerId,
-            room.getMovesCount(),
-            duration
-        );
+                room.getId(),
+                room.getHostId(),
+                room.getGuestId() != null ? room.getGuestId() : 0,
+                winnerId,
+                room.getMovesCount(),
+                duration,
+                hostDelta,
+                guestDelta);
         matchHistoryDAO.saveMatch(match);
 
         room.setLastResult(winnerSymbol, reason, winnerId);
 
-        // Broadcast GAME_OVER
-        GameMessage gameOverMsg = new GameMessage("GAME_OVER");
-        gameOverMsg.setWinner(winnerSymbol);
-        gameOverMsg.setWinnerId(winnerId);
-        gameOverMsg.setMessage(reason);
-        gameOverMsg.setRow(lastRow);
-        gameOverMsg.setCol(lastCol);
-        gameOverMsg.setScoreChange(winnerId != null ? 25 : 5);
+        // Gửi GAME_OVER cho Host
+        GameMessage hostMsg = new GameMessage("GAME_OVER");
+        hostMsg.setWinner(winnerSymbol);
+        hostMsg.setWinnerId(winnerId);
+        hostMsg.setMessage(reason);
+        hostMsg.setRow(lastRow);
+        hostMsg.setCol(lastCol);
+        hostMsg.setScoreChange(hostDelta);
+        roomManager.sendToUser(hostId, hostMsg);
 
-        roomManager.broadcastToRoom(room.getRoomCode(), gameOverMsg);
+        // Gửi GAME_OVER cho Guest
+        if (guestId > 0) {
+            GameMessage guestMsg = new GameMessage("GAME_OVER");
+            guestMsg.setWinner(winnerSymbol);
+            guestMsg.setWinnerId(winnerId);
+            guestMsg.setMessage(reason);
+            guestMsg.setRow(lastRow);
+            guestMsg.setCol(lastCol);
+            guestMsg.setScoreChange(guestDelta);
+            roomManager.sendToUser(guestId, guestMsg);
+        }
     }
 
     private void handleChallengeRequest(int challengerId, GameMessage msg) {
         int targetId = msg.getTargetUserId();
-        if (targetId <= 0 || targetId == challengerId) return;
+        if (targetId <= 0 || targetId == challengerId)
+            return;
 
         // Kiểm tra đối thủ có online không
         Session targetSession = roomManager.getSession(targetId);
@@ -849,7 +925,8 @@ public class GameWebSocket {
 
         User challenger = userDAO.findById(challengerId);
         User target = userDAO.findById(targetId);
-        if (challenger == null || target == null) return;
+        if (challenger == null || target == null)
+            return;
 
         String challengeId = "CHAL_" + (System.currentTimeMillis() % 10000000);
         String chalName = challenger.getNickname() != null ? challenger.getNickname() : challenger.getUsername();
@@ -857,8 +934,7 @@ public class GameWebSocket {
 
         RoomManager.ChallengeRequest req = new RoomManager.ChallengeRequest(
                 challengeId, challengerId, chalName, challenger.getScore(), challenger.getAvatar(),
-                targetId, tgtName
-        );
+                targetId, tgtName);
         roomManager.addChallenge(req);
 
         // Báo cho Challenger biết đã gửi thành công

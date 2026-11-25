@@ -13,7 +13,7 @@ public class User {
     private int draws;
     private int losses;
     private int score;
-    private String status;
+    private String status;// (ONLINE/OFFLINE/PLAYING)
     private Timestamp createdAt;
 
     public User() {
@@ -22,7 +22,8 @@ public class User {
         this.status = "OFFLINE";
     }
 
-    public User(int id, String username, String nickname, String avatar, int totalMatches, int wins, int draws, int losses, int score, String status) {
+    public User(int id, String username, String nickname, String avatar, int totalMatches, int wins, int draws,
+            int losses, int score, String status) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
@@ -133,7 +134,8 @@ public class User {
     }
 
     public double getWinRate() {
-        if (totalMatches == 0) return 0.0;
+        if (totalMatches == 0)
+            return 0.0;
         return Math.round(((double) wins / totalMatches * 100) * 10.0) / 10.0;
     }
 
@@ -158,29 +160,44 @@ public class User {
     }
 
     public String getRankTier() {
-        if (score >= 1900) return "Cao Thủ";
-        if (score >= 1700) return "Kim Cương";
-        if (score >= 1500) return "Bạch Kim";
-        if (score >= 1300) return "Vàng";
-        if (score >= 1100) return "Bạc";
+        if (score >= 1900)
+            return "Cao Thủ";
+        if (score >= 1700)
+            return "Kim Cương";
+        if (score >= 1500)
+            return "Bạch Kim";
+        if (score >= 1300)
+            return "Vàng";
+        if (score >= 1100)
+            return "Bạc";
         return "Đồng";
     }
 
     public String getRankBadge() {
-        if (score >= 1900) return "👑 Cao Thủ";
-        if (score >= 1700) return "💎 Kim Cương";
-        if (score >= 1500) return "🔮 Bạch Kim";
-        if (score >= 1300) return "🥇 Vàng";
-        if (score >= 1100) return "🥈 Bạc";
+        if (score >= 1900)
+            return "👑 Cao Thủ";
+        if (score >= 1700)
+            return "💎 Kim Cương";
+        if (score >= 1500)
+            return "🔮 Bạch Kim";
+        if (score >= 1300)
+            return "🥇 Vàng";
+        if (score >= 1100)
+            return "🥈 Bạc";
         return "🥉 Đồng";
     }
 
     public String getRankColor() {
-        if (score >= 1900) return "#ff1744";
-        if (score >= 1700) return "#00e5ff";
-        if (score >= 1500) return "#b388ff";
-        if (score >= 1300) return "#ffd700";
-        if (score >= 1100) return "#cfd8dc";
+        if (score >= 1900)
+            return "#ff1744";
+        if (score >= 1700)
+            return "#00e5ff";
+        if (score >= 1500)
+            return "#b388ff";
+        if (score >= 1300)
+            return "#ffd700";
+        if (score >= 1100)
+            return "#cfd8dc";
         return "#cd7f32";
     }
 }
